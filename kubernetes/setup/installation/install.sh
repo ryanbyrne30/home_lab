@@ -1,6 +1,7 @@
 #!/bin/bash
 
 SCRIPTS=(
+  "kubeadm.sh"
   "kubectl.sh"
   "container_images.sh"
 )
