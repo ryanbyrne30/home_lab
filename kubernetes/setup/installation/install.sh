@@ -1,10 +1,9 @@
 #!/bin/bash
 
 SCRIPTS=(
+  "container_runtimes"
   "disable_swap.sh"
-  "kubeadm.sh"
-  "kubectl.sh"
-  "container_images.sh"
+  "k8s_tools.sh"
 )
 
 for script in "${SCRIPTS[@]}"; do 
