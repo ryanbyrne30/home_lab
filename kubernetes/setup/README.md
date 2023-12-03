@@ -1,12 +1,13 @@
-# Steps
+# Setting Up Kubernetes (Production)
 
-1. [Install kubeadm](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/)
+Kubernetes (K8s) utilizes three tools to manage a cluster:
 
-   - Check [this list](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#before-you-begin) to see host compatability requirements
-   - **Swap memory must be disabled**
+- `kubeadm`: command to bootstrap the cluster
+- `kubelet`: the component that runs on all of the machines in your cluster and does things like starting pods and containers.
+- `kubectl`: the command line util to talk to your cluster.
 
-2. [Download Kubernetes](https://kubernetes.io/docs/setup/)
+**Note:** In order for K8s to function properly, all versions of `kubeadm`, `kubelet` and `kubectl` must be of the **same verion**.
 
-   - [kubectl](https://kubernetes.io/releases/download/)
-     - Used to run commands against a K8s cluster
-     - You must use a kubectl version that is within one minor version difference of your cluster. For example, a v1.28 client can communicate with v1.27, v1.28, and v1.29 control planes. Using the latest compatible version of kubectl helps avoid unforeseen issues.
+## Steps
+
+1. [Install Kubernetes](installation/README.md)

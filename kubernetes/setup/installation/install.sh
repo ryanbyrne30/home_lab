@@ -1,6 +1,7 @@
 #!/bin/bash
 
 SCRIPTS=(
+  "disable_swap.sh"
   "kubeadm.sh"
   "kubectl.sh"
   "container_images.sh"
