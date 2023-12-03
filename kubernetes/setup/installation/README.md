@@ -15,7 +15,7 @@ Steps are listed out below. See `install.sh` for the set of commands (these may 
    - Commands shown in [container_runtime.sh](scripts/container_runtimes.sh) - configured for Ubuntu - `containerd` and `systemd`
 2. Disable SWAP memory on host
    - See [disable_swap.sh](scripts/disable_swap.sh)
-3. [Install kubeadm](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/)
+3. [Install kubeadm, kubectl and kubelet](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#installing-kubeadm-kubelet-and-kubectl)
 
    - Check [this list](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#before-you-begin) to see host compatability requirements
-   - **Swap memory must be disabled** (see `scripts/disable_swap.sh`)
+   - see [k8s_tools.sh](scripts/k8s_tools.sh)
