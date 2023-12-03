@@ -1,3 +1,7 @@
+#!/bin/bash
+
+# Installation steps found here: https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
+
 # Download latest release of kubectl
 # To download a specific version, replace the $(curl -L -s https://dl.k8s.io/release/stable.txt) portion of the command with the specific version.
 # For example, to download version 1.28.4 on Linux x86-64, type:
