@@ -6,7 +6,7 @@ IMAGES=(
   "registry.k8s.io/kube-controller-manager:$VERSION"
   "registry.k8s.io/kube-proxy:$VERSION"
   "registry.k8s.io/kube-scheduler:$VERSION"
-  "registry.k8s.io/kube-conformance:$VERSION"
+  "registry.k8s.io/conformance:$VERSION"
 )
 
 for image in "${IMAGES[@]}"; do
