@@ -23,4 +23,4 @@ echo "Create the manifest"
 kubectl create -f custom-resources.yaml
 
 # Verify Calico is running
-watch kubectl get pods -n calico-system
+watch kubectl get pods -n calico-system 

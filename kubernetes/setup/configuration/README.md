@@ -40,6 +40,7 @@ In order for pods to communicate with eachother you must install a Pod network a
 
 ### [Installing Calico](https://docs.tigera.io/calico/latest/getting-started/kubernetes/self-managed-onprem/onpremises)
 
-Checkout [calico.sh](scripts/calico.sh)
-
 1. [Install the Calico operator](https://docs.tigera.io/calico/latest/getting-started/kubernetes/self-managed-onprem/onpremises)
+   - see [calico_operator.sh](scripts/calico_operator.sh)
+2. [Install calicoctl](https://docs.tigera.io/calico/latest/operations/calicoctl/install)
+   - see [calicoctl.sh](scripts/calicoctl.sh)
