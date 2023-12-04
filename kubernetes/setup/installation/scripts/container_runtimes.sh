@@ -54,6 +54,7 @@ echo
 echo "Installing containerd: $CONTAINERD_DOWNLOAD_URL"
 curl -L -o $CONTAINERD $CONTAINERD_DOWNLOAD_URL 
 sudo tar Cxzvf /usr/local $CONTAINERD
+rm $CONTAINERD
 
 # Install containerd systemd service file
 echo
@@ -76,6 +77,7 @@ RUNC_VERSION="v1.1.10"
 RUNC="runc.amd64"
 curl -L -o $RUNC https://github.com/opencontainers/runc/releases/download/$RUNC_VERSION/$RUNC
 sudo install -m 755 $RUNC /usr/local/sbin/runc
+rm $RUNC
 
 echo
 echo "---------------------"
@@ -90,6 +92,7 @@ CNI="cni-plugins-linux-amd64-$CNI_VERSION.tgz"
 curl -L -o $CNI https://github.com/containernetworking/plugins/releases/download/$CNI_VERSION/$CNI
 sudo mkdir -p /opt/cni/bin
 sudo tar Cxzvf /opt/cni/bin $CNI
+rm $CNI
 
 # Create config.toml
 # Reference: https://github.com/containerd/containerd/blob/main/docs/getting-started.md#customizing-containerd
