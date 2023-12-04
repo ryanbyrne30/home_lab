@@ -18,6 +18,8 @@ From the [docs](https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/conf
 kind: ClusterConfiguration
 apiVersion: kubeadm.k8s.io/v1beta3
 kubernetesVersion: v1.28.4
+networking:
+  podSubnet: "10.0.0.0/16" # --pod-network-cidr
 ---
 kind: KubeletConfiguration
 apiVersion: kubelet.config.k8s.io/v1beta1
@@ -30,6 +32,8 @@ This can be passed in by running
 kubeadm init --config kubeadm-config.yaml
 ```
 
+In order to run `kubeadm init` again, you must first tear down your cluster. See [kubernetes/cleanup](../../cleanup/README.md).
+
 ## Install a K8s Pod network add-on
 
 [Official docs](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#pod-network)
@@ -39,6 +43,15 @@ In order for pods to communicate with eachother you must install a Pod network a
 [See here](https://kubernetes.io/docs/concepts/cluster-administration/addons/#networking-and-network-policy) for a list of some Container Network Interfaces (CNIs) for K8s.
 
 ### [Installing Calico](https://docs.tigera.io/calico/latest/getting-started/kubernetes/self-managed-onprem/onpremises)
+
+#### Prerequisites
+
+- Make sure your host meets the [minimum requirements](https://docs.tigera.io/calico/latest/getting-started/kubernetes/quickstart#before-you-begin)
+- If your host uses `NetworkManager`, [configure NetworkManager](https://docs.tigera.io/calico/latest/operations/troubleshoot/troubleshooting#configure-networkmanager)
+
+#### Install Calico
+
+Reference: [Quickstart guide](https://docs.tigera.io/calico/latest/getting-started/kubernetes/quickstart)
 
 1. [Install the Calico operator](https://docs.tigera.io/calico/latest/getting-started/kubernetes/self-managed-onprem/onpremises)
    - see [calico_operator.sh](scripts/calico_operator.sh)

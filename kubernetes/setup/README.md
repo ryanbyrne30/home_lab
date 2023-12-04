@@ -11,3 +11,4 @@ Kubernetes (K8s) utilizes three tools to manage a cluster:
 ## Steps
 
 1. [Install Kubernetes](installation/README.md)
+2. [Configure Kubernetes](configuration/README.md)
