@@ -19,3 +19,7 @@ Steps are listed out below. See `install.sh` for the set of commands (these may 
 
    - Check [this list](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#before-you-begin) to see host compatability requirements
    - see [k8s_tools.sh](scripts/k8s_tools.sh)
+
+## What's Next
+
+[Configure and initialize a cluster](../configuration/README.md)
