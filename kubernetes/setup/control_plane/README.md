@@ -1,11 +1,10 @@
-# Configuring a K8s Cluster
+# Setting Up K8s Control Plane
 
 ## Steps
 
 1. [Configure and setup your K8s control plane](#configuring-the-kubelet-cgroup-driver)
 2. [Install a K8s Pod network add-on](#install-a-k8s-pod-network-add-on)
-
-## Setting Up K8s Control Plane
+3. [Add nodes to cluster](#add-nodes-to-cluster)
 
 ### Configuring the kubelet cgroup driver
 
@@ -57,3 +56,34 @@ Reference: [Quickstart guide](https://docs.tigera.io/calico/latest/getting-start
    - see [calico_operator.sh](scripts/calico_operator.sh)
 2. [Install calicoctl](https://docs.tigera.io/calico/latest/operations/calicoctl/install)
    - see [calicoctl.sh](scripts/calicoctl.sh)
+
+### Add Nodes to Cluster
+
+[Official docs](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#join-nodes)
+
+1. SSH into machine hosting node you want to add
+2. Become root (`sudo su -`)
+3. Install a [container runtime (CRI)](../installation/README.md#steps) if needed
+4. Run the command that was output by `kubeadm init`:
+
+```bash
+kubeadm join --token <token> <control-plane-host>:<control-plane-port> --discovery-token-ca-cert-hash sha256:<hash>
+```
+
+If you do not have the token, run
+
+```bash
+kubeadm token list
+```
+
+These tokens expire after 24 hours, so if yours has expired you can generate a new one
+
+```bash
+kubeadm token create
+```
+
+If you don't have the value of `--discovery-token-ca-cert-hash` you can get it from
+
+```bash
+openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+```
