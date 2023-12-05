@@ -35,6 +35,116 @@ watch kubectl get pods -n kubernetes-dashboard
 
 ### Exposing the dashboard
 
+#### Creating an NGINX reverse proxy
+
+[Official docs](https://docs.nginx.com/nginx/admin-guide/security-controls/securing-http-traffic-upstream/)
+
+Install nginx
+
+```bash
+sudo apt install nginx
+```
+
+##### Client Certs
+
+The Kubernetes Dashboard requires TLS when accessing it. Therefore we need to create TLS certificates for our reverse proxy so we can access the Dashboard over HTTPS.
+
+First create a TLS certificate that nginx will use to secure incoming traffic to the server.
+
+```bash
+sudo mkdir -p /etc/nginx/certs
+sudo chmod 700 /etc/nginx/certs
+
+# generate client certs
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/nginx/certs/client.key -out /etc/nginx/certs/client.crt
+```
+
+##### Upstream CA Cert
+
+Next we will create a CA certificate for our nginx reverse proxy to communicate with the Kubernetes Dashboard.
+
+```bash
+# generate the private key
+sudo openssl genrsa -des3 -out /etc/nginx/certs/myCA.key 2048
+
+# generate the public key based off private key
+sudo openssl req -x509 -new -nodes -key /etc/nginx/certs/myCA.key -sha256 -days 1825 -out /etc/nginx/certs/myCA.pem
+```
+
+##### Upstream Signed Certs
+
+Create a private key
+
+```bash
+sudo openssl genrsa -out /etc/nginx/certs/upstream.key 2048
+```
+
+Create a CSR
+
+```bash
+sudo openssl req -new -key /etc/nginx/certs/upstream.key -out /etc/nginx/certs/upstream.csr
+```
+
+Create X509 V3 certificate extension file
+
+```toml
+# /etc/nginx/certs/upstream.ext
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = homelab.local
+```
+
+Create upstream cert
+
+```bash
+sudo openssl x509 -req \
+-in /etc/nginx/certs/upstream.csr \
+-CA /etc/nginx/certs/myCA.pem \
+-CAkey /etc/nginx/certs/myCA.key \
+-CAcreateserial \
+-out /etc/nginx/certs/upstream.crt \
+-days 825 -sha256 -extfile /etc/nginx/certs/upstream.ext
+
+```
+
+```bash
+sudo mkdir /etc/nginx/tlscerts
+sudo chmod 700 /etc/nginx/tlscerts
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/nginx/tlscerts/nginx-selfsigned.key -out /etc/nginx/tlscerts/nginx-selfsigned.crt
+```
+
+This will create self-signed TLS certificates in the `/etc/nginx/tlscerts` directory.
+
+##### Create nginx reverse proxy
+
+```nginx
+# /etc/nginx/sites-available/reverse-proxy.nginx
+server {
+  listen 8989 ssl;
+  listen [::]:8989 ssl;
+
+  ssl_certificate /etc/nginx/certs/client.crt;
+  ssl_certificate_key /etc/nginx/certs/client.key;
+
+  location / {
+    proxy_pass https://127.0.0.1:8443/;
+    proxy_ssl_certificate /etc/nginx/certs/upstream.crt;
+    proxy_ssl_certificate_key /etc/nginx/certs/upstream.key;
+    proxy_ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    proxy_ssl_ciphers   HIGH:!aNULL:!MD5;
+    proxy_ssl_trusted_certificate /etc/nginx/certs/myCA.crt;
+
+    proxy_ssl_verify on;
+    proxy_ssl_verify_depth 2;
+    proxy_ssl_session_reuse on;
+  }
+}
+```
+
 [Official docs](https://github.com/kubernetes/dashboard/blob/master/docs/user/accessing-dashboard/README.md)
 
 ```bash
