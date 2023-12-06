@@ -19,3 +19,4 @@ In order for this to work, you will need to have multiple machines (VMs or bare 
 1. [Install Kubernetes](installation/README.md) - applies to all hosts
 2. [Setup K8s Control Plane](control_plane/README.md) - applies to host responsible for management of the cluster
 3. [Add K8s Node to Cluster](control_plane/README.md#add-nodes-to-cluster) - applies to hosts responsible for running applications
+4. [(Optional) Setup K8s Dashboard](gui/README.md)
