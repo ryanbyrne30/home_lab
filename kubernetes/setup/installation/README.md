@@ -22,4 +22,4 @@ Steps are listed out below. See `install.sh` for the set of commands (these may 
 
 ## What's Next
 
-[Configure and initialize a cluster](../configuration/README.md)
+[Configure and initialize a cluster](../control_plane/README.md)

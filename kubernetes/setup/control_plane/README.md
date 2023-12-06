@@ -87,3 +87,7 @@ If you don't have the value of `--discovery-token-ca-cert-hash` you can get it f
 ```bash
 openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
 ```
+
+## What's Next?
+
+[Setup the Kubernetes Dashboard](../gui/README.md)
