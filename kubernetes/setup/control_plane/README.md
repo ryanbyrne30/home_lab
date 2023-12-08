@@ -88,6 +88,10 @@ If you don't have the value of `--discovery-token-ca-cert-hash` you can get it f
 openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
 ```
 
+**Note**: the hostnames of each node must be unique. [Change the hostname of your linux server](https://www.cyberciti.biz/faq/ubuntu-change-hostname-command/).
+
+See `kubeadm join` [docs](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-join/)
+
 ## What's Next?
 
 [Setup the Kubernetes Dashboard](../gui/README.md)
