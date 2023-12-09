@@ -1,4 +1,4 @@
-# Setting Up Kubernetes (Production)
+# Setting Up Kubernetes
 
 Kubernetes (K8s) utilizes three tools to manage a cluster:
 

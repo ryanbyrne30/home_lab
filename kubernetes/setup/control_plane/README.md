@@ -57,7 +57,7 @@ Reference: [Quickstart guide](https://docs.tigera.io/calico/latest/getting-start
 2. [Install calicoctl](https://docs.tigera.io/calico/latest/operations/calicoctl/install)
    - see [calicoctl.sh](scripts/calicoctl.sh)
 
-### Add Nodes to Cluster
+## Add Nodes to Cluster
 
 [Official docs](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#join-nodes)
 
@@ -91,6 +91,18 @@ openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outfor
 **Note**: the hostnames of each node must be unique. [Change the hostname of your linux server](https://www.cyberciti.biz/faq/ubuntu-change-hostname-command/).
 
 See `kubeadm join` [docs](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-join/)
+
+### Verify Node
+
+[Official docs](https://kubernetes.io/docs/tasks/debug/debug-cluster/kubectl-node-debug/#debugging-a-node-using-kubectl-debug-node)
+
+You can validate that a node has joined your cluster by testing if you can deploy a pod to it. Here is how to deploy a debug pod to a node.
+
+```bash
+kubectl debug node/<node> -it --image=ubuntu
+```
+
+You should gain access to the pod's terminal and running `kubectl get pods` you should see the pod has been deployed to the specified node.
 
 ## What's Next?
 
