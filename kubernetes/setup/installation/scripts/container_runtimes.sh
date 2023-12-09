@@ -118,7 +118,7 @@ sudo sed -i -e '/SystemdCgroup/ s/false/true/' /etc/containerd/config.toml
 
 # Restart containerd
 echo
-echo "Restarting containerd
+echo "Restarting containerd"
 sudo systemctl restart containerd
 
 echo "Containerd is now installed and configured"
