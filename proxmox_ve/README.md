@@ -10,6 +10,8 @@ Proxmox Virtual Environment is a complete, open-source server management platfor
 
 ### Creating Templates
 
+#### Prep machine
+
 ```bash
 # update and upgrade
 sudo apt update && sudo apt upgrade
@@ -26,6 +28,14 @@ sudo ln -s /etc/machine-id /var/lib/dbus/machine-id
 # clean cache
 sudo apt clean && sudo apt autoremove
 ```
+
+Then shut down the machine
+
+#### Post shutdown
+
+- Remove the ISO from Hardware
+- Add CloudInit Drive to Hardware
+- Convert to template
 
 ### Creating Template Clones
 
