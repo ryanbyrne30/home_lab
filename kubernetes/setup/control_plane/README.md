@@ -33,6 +33,14 @@ kubeadm init --config kubeadm-config.yaml
 
 In order to run `kubeadm init` again, you must first tear down your cluster. See [kubernetes/cleanup](../../cleanup/README.md).
 
+Copy the kubelet config
+
+```bash
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $USER:$USER $HOME/.kube/config
+```
+
 ## Install a K8s Pod network add-on
 
 [Official docs](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#pod-network)
