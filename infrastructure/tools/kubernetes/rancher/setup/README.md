@@ -1,6 +1,16 @@
-# Setup Rancher for a K8s Cluster
+# Setup Rancher for a K8s Cluster <!-- omit from toc -->
 
 [Reference](https://ranchermanager.docs.rancher.com/pages-for-subheaders/install-upgrade-on-a-kubernetes-cluster)
+
+## Content <!-- omit from toc -->
+
+- [Prerequisites](#prerequisites)
+- [Install the Rancher Helm Chart](#install-the-rancher-helm-chart)
+  - [Add the Helm Chart Repo](#add-the-helm-chart-repo)
+  - [Create a Namespace for Rancher](#create-a-namespace-for-rancher)
+  - [Configure SSL](#configure-ssl)
+  - [Install Rancher with Helm and Certs](#install-rancher-with-helm-and-certs)
+- [Access Rancher](#access-rancher)
 
 ## Prerequisites
 

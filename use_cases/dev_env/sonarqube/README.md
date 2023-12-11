@@ -1,8 +1,17 @@
-# SonarQube
+# SonarQube <!-- omit in toc -->
 
 [Official docs](https://docs.sonarsource.com/sonarqube/latest/)
 
 SonarQube is a self-managed, automatic code review tool that systematically helps you deliver Clean Code. As a core element of our Sonar solution, SonarQube integrates into your existing workflow and detects issues in your code to help you perform continuous code inspections of your projects. The product analyses 30+ different programming languages and integrates into your Continuous Integration (CI) pipeline of DevOps platforms to ensure that your code meets high-quality standards.
+
+## Contents<!-- omit in toc -->
+
+- [Install](#install)
+  - [Install on K8s](#install-on-k8s)
+    - [Create SonarQube PersistentVolume](#create-sonarqube-persistentvolume)
+    - [Install SonarQube](#install-sonarqube)
+- [Connecting to SonarQube](#connecting-to-sonarqube)
+  - [Add Ingress Using Rancher Dashboard](#add-ingress-using-rancher-dashboard)
 
 ## Install
 
@@ -13,8 +22,6 @@ SonarQube is a self-managed, automatic code review tool that systematically help
 #### Create SonarQube PersistentVolume
 
 There are many [different ways](https://kubernetes.io/docs/concepts/storage/persistent-volumes) to persist data in K8s. In this example we will be using a file path on a node's host machine to persist SonarQube data. You can use other methods that are more secure/persistent, however, since SonarQube is not super critical this is the easiest and cheapest solution.
-
-##### Create PV
 
 ```yaml
 # sonarqube-pv.yaml
