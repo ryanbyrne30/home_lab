@@ -70,3 +70,22 @@ export POD_NAME=$(kubectl get pods --namespace sonarqube -l "app=sonarqube,relea
 echo "Visit http://127.0.0.1:8080 to use your application"
 kubectl port-forward $POD_NAME 8080:9000 -n sonarqube
 ```
+
+## Connecting to SonarQube
+
+### Add Ingress Using Rancher Dashboard
+
+In your Rancher dashboard, open the project your SonarQube instance exists in (`local`). Under "Service Discovery" open "Ingresses". Choose the appropriate values for your SonarQube service. Typically they will be:
+
+- Namespace: `sonarqube`
+- Name: `sonarqube` (or anything you want)
+- Request Host: `sonarqube.homelab` (or any DNS name you want)
+- Path Prefix: `/`
+- Target Service: `sonarqube-sonarqube`
+- Port: `9000`
+
+You should not be able to access SonarQube at `sonarqube.homelab`.
+
+If you can't, update your `/etc/hosts` file and add a record that points `sonarqube.homelab` at your load balancer (or the host that is running your [nginx load balancer](../../nginx/load_balancer.md)).
+
+The default login is `admin/admin`.
