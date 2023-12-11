@@ -3,3 +3,70 @@
 [Official docs](https://docs.sonarsource.com/sonarqube/latest/)
 
 SonarQube is a self-managed, automatic code review tool that systematically helps you deliver Clean Code. As a core element of our Sonar solution, SonarQube integrates into your existing workflow and detects issues in your code to help you perform continuous code inspections of your projects. The product analyses 30+ different programming languages and integrates into your Continuous Integration (CI) pipeline of DevOps platforms to ensure that your code meets high-quality standards.
+
+## Install
+
+### [Install on K8s](https://docs.sonarsource.com/sonarqube/latest/setup-and-upgrade/deploy-on-kubernetes/deploy-sonarqube-on-kubernetes/)
+
+[See the Rancher docs for getting started with K8s](../../rancher/README.md)
+
+#### Create SonarQube PersistentVolume
+
+There are many [different ways](https://kubernetes.io/docs/concepts/storage/persistent-volumes) to persist data in K8s. In this example we will be using a file path on a node's host machine to persist SonarQube data. You can use other methods that are more secure/persistent, however, since SonarQube is not super critical this is the easiest and cheapest solution.
+
+##### Create PV
+
+```yaml
+# sonarqube-pv.yaml
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: sonarqube-pv
+spec:
+  capacity:
+    storage: 50Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Recycle
+  local:
+    path: /path/on/node/host # change this
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - HOSTNAME_OF_NODE_HOST # and this
+```
+
+#### Install SonarQube
+
+Configure host for Elastisearch
+[Reference](https://stackoverflow.com/questions/51445846/elasticsearch-max-virtual-memory-areas-vm-max-map-count-65530-is-too-low-inc)
+
+```bash
+sysctl -w vm.max_map_count=262144
+```
+
+Install the Helm chart
+
+```bash
+helm repo add sonarqube https://SonarSource.github.io/helm-chart-sonarqube
+helm repo update
+kubectl create namespace sonarqube
+helm upgrade --install -n sonarqube sonarqube sonarqube/sonarqube
+```
+
+[Additional configuration options](https://docs.sonarsource.com/sonarqube/latest/setup-and-upgrade/deploy-on-kubernetes/deploy-sonarqube-on-kubernetes/)
+
+Following install you will be greeted by
+
+```bash
+Get the application URL by running these commands:
+export POD_NAME=$(kubectl get pods --namespace sonarqube -l "app=sonarqube,release=sonarqube" -o jsonpath="{.items[0].metadata.name}")
+echo "Visit http://127.0.0.1:8080 to use your application"
+kubectl port-forward $POD_NAME 8080:9000 -n sonarqube
+```
