@@ -10,6 +10,7 @@
     - [Auth Token](#auth-token)
     - [Configuration](#configuration)
     - [Install](#install)
+      - [Troubleshooting](#troubleshooting)
   - [Joining additional control plane nodes](#joining-additional-control-plane-nodes)
   - [Confirm RKE2 is Running](#confirm-rke2-is-running)
   - [Using the kubeconfig File with kubectl](#using-the-kubeconfig-file-with-kubectl)
@@ -17,9 +18,12 @@
 
 ## Prerequisites
 
-- Set up 3 nodes, load balancer and a DNS record [reference](https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/infrastructure-setup/ha-rke2-kubernetes-cluster)
+- Set up an odd number of nodes, load balancer and a DNS record [reference](https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/infrastructure-setup/ha-rke2-kubernetes-cluster)
   - [Set up an nginx load balancer](../../../nginx/load_balancer.md)
 - Note that in order for RKE2 to work correctly with the load balancer, you need to set up two listeners: one for the supervisor on **port 9345**, and one for the Kubernetes API on **port 6443**
+- Make sure your host meets the [minimum requirements](https://docs.rke2.io/install/requirements#hardware)
+  - 4GB of RAM
+  - 2 CPUs
 
 ## Installing Kubernetes
 
@@ -63,6 +67,16 @@ curl -sfL https://get.rke2.io | sh -
 systemctl enable rke2-server.service
 systemctl start rke2-server.service
 ```
+
+##### Troubleshooting
+
+Watch the logs
+
+```bash
+journalctl -u rke2-server -f
+```
+
+If your setup keeps failing, make sure you meet the [minimus system requirements](https://docs.rke2.io/install/requirements#hardware) (4GB RAM, 2 CPUS)
 
 ### Joining additional control plane nodes
 

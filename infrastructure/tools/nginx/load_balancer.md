@@ -64,9 +64,9 @@ http {
         ssl_certificate_key /etc/nginx/certs/server.key;
         location / {
             proxy_pass https://rancher_servers_https;
-            proxy_set_header Host rancher.homelab; # DNS for server
+            proxy_set_header Host rancher.homelab.local; # DNS for server
             proxy_ssl_server_name on;
-            proxy_ssl_name rancher.homelab; # DNS for server
+            proxy_ssl_name rancher.homelab.local; # DNS for server
         }
     }
 }

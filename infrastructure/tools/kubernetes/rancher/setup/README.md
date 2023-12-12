@@ -93,7 +93,7 @@ Example:
 ```bash
 helm install rancher rancher-stable/rancher \
   --namespace cattle-system \
-  --set hostname=rancher.homelab \
+  --set hostname=rancher.homelab.local \
   --set bootstrapPassword=MY_PASSWORD
 ```
 
@@ -114,7 +114,7 @@ kubectl -n cattle-system get deploy rancher
 
 ## Access Rancher
 
-If all went well you should be able to access Rancher using the DNS name you configured on your load balancer (`rancher.homelab`).
+If all went well you should be able to access Rancher using the DNS name you configured on your load balancer (`rancher.homelab.local`).
 
 Login with the bootstrapped password or run this to get the password
 

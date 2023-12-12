@@ -9,3 +9,7 @@
 [Architecture recommendations](https://ranchermanager.docs.rancher.com/reference-guides/rancher-manager-architecture/architecture-recommendations#environment-for-kubernetes-installations)
 
 - Have dedicated nodes for Rancher servers ([control planes](https://ranchermanager.docs.rancher.com/reference-guides/kubernetes-concepts#controlplane-nodes))
+
+## Next Steps
+
+[Setup a cluster](setup/README.md)

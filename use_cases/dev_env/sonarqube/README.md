@@ -10,14 +10,20 @@ SonarQube is a self-managed, automatic code review tool that systematically help
   - [Install on K8s](#install-on-k8s)
     - [Create SonarQube PersistentVolume](#create-sonarqube-persistentvolume)
     - [Install SonarQube](#install-sonarqube)
+      - [Troubleshooting](#troubleshooting)
+        - [Postgres pod not starting](#postgres-pod-not-starting)
+        - [SonarQube pod not starting](#sonarqube-pod-not-starting)
+        - [SonarQube pod backing off](#sonarqube-pod-backing-off)
 - [Connecting to SonarQube](#connecting-to-sonarqube)
+  - [Add a Certificate for SonarQube](#add-a-certificate-for-sonarqube)
   - [Add Ingress Using Rancher Dashboard](#add-ingress-using-rancher-dashboard)
+- [SonarLint](#sonarlint)
 
 ## Install
 
 ### [Install on K8s](https://docs.sonarsource.com/sonarqube/latest/setup-and-upgrade/deploy-on-kubernetes/deploy-sonarqube-on-kubernetes/)
 
-[See the Rancher docs for getting started with K8s](../../rancher/README.md)
+[See the Rancher docs for getting started with K8s](../../../infrastructure/tools/kubernetes/rancher/README.md)
 
 #### Create SonarQube PersistentVolume
 
@@ -32,7 +38,7 @@ metadata:
   name: sonarqube-pv
 spec:
   capacity:
-    storage: 50Gi
+    storage: 30Gi
   volumeMode: Filesystem
   accessModes:
     - ReadWriteOnce
@@ -47,6 +53,10 @@ spec:
               operator: In
               values:
                 - HOSTNAME_OF_NODE_HOST # and this
+```
+
+```bash
+kubectl create -f sonarqube-pv.yaml
 ```
 
 #### Install SonarQube
@@ -78,7 +88,31 @@ echo "Visit http://127.0.0.1:8080 to use your application"
 kubectl port-forward $POD_NAME 8080:9000 -n sonarqube
 ```
 
+##### Troubleshooting
+
+###### Postgres pod not starting
+
+If your postgres pod for sonarqube is not starting up, you may need to increase the disk size available in your persistent volume.
+
+###### SonarQube pod not starting
+
+If your sonarqube pod is not starting up, you may need more CPU capacity (`2 CPUs`) and memory (`4GB RAM`).
+
+###### SonarQube pod backing off
+
+If your sonarqube pod is saying `Back-off restarting failed container` and `kubectl logs sonarqube-sonarqube-0 -n sonarqube` mentions `max virtual memory areas vm.max_map_count [65530] is too low` you need to increase this memory value on the node's host.
+
+```bash
+sysctl -w vm.max_map_count=262144
+```
+
 ## Connecting to SonarQube
+
+### Add a Certificate for SonarQube
+
+Follow [these steps](../../../infrastructure/tools/kubernetes/rancher/certificates/README.md) to create a CA and CA signed certificate for SonarQube.
+
+In your Rancher dashboard, under "Secrets" add the certificate and key you just created.
 
 ### Add Ingress Using Rancher Dashboard
 
@@ -91,8 +125,14 @@ In your Rancher dashboard, open the project your SonarQube instance exists in (`
 - Target Service: `sonarqube-sonarqube`
 - Port: `9000`
 
-You should not be able to access SonarQube at `sonarqube.homelab`.
+Under `Certificates`, add the certificate you created previously.
 
-If you can't, update your `/etc/hosts` file and add a record that points `sonarqube.homelab` at your load balancer (or the host that is running your [nginx load balancer](../../nginx/load_balancer.md)).
+You should now be able to access SonarQube at `sonarqube.homelab.local`.
+
+If you can't, update your `/etc/hosts` file and add a record that points `sonarqube.homelab.local` at your load balancer (or the host that is running your [nginx load balancer](../../nginx/load_balancer.md)).
 
 The default login is `admin/admin`.
+
+## SonarLint
+
+In VSCode, install SonarLint and add a connection to SonarQube. It should ask you to trust the CA we created earlier.
