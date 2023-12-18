@@ -4,5 +4,5 @@ Repo for resources on getting started with a dope ass home lab.
 
 ## In this repo
 
-- [Proxmox](proxmox_ve/README.md) - Open source and enterprise ready tool for managing virtual environments
-- [Kubernetes](kubernetes/README.md) - Container orchestration
+- [Infrastructure](infrastructure/README.md) - Laying the groundwork for your servers
+- [Use cases](use_cases/README.md) - More specific setups for various use cases

@@ -31,14 +31,14 @@ echo "Create the manifest"
 kubectl create -f custom-resources.yaml
 
 # Verify Calico is running
-watch kubectl get pods -n calico-system 
+#watch kubectl get pods -n calico-system 
 
 # Remove the taints on the control plane so that you can schedule pods on it
 echo
-echo "Removing taints"
-kubectl taint nodes --all node-role.kubernetes.io/control-plane-
-kubectl taint nodes --all node-role.kubernetes.io/master-
-echo "The above should return -> node/<your-hostname> untainted"
+#echo "Removing taints"
+#kubectl taint nodes --all node-role.kubernetes.io/control-plane-
+#kubectl taint nodes --all node-role.kubernetes.io/master-
+#echo "The above should return -> node/<your-hostname> untainted"
 
 # Confirm you have a node on your cluster
 echo
