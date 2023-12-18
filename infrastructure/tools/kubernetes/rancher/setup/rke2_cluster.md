@@ -89,7 +89,7 @@ To join additional nodes, configure each node with the same shared token. On eac
 token: my-shared-secret
 server: https://<DNS-DOMAIN>:9345
 tls-san:
-  - rancher.homelab
+  - rancher.homelab.local
   #- another-kubernetes-domain.com
 ```
 
@@ -100,7 +100,7 @@ Example
 token: my-shared-secret
 server: https://192.168.1.16:9345
 tls-san:
-  - rancher.homelab
+  - rancher.homelab.local
   #- another-kubernetes-domain.com
 ```
 

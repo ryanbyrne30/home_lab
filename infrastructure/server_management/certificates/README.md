@@ -51,3 +51,7 @@ openssl x509 -req -in hellfish.test.csr -CA myCA.pem -CAkey myCA.key \
 ```bash
 openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 365
 ```
+
+## Adding a CA Certificate to the Trust Store
+
+[Reference](https://ubuntu.com/server/docs/security-trust-store)

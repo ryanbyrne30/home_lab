@@ -1,23 +1,22 @@
 # Rancher Certificates
 
-## Creating an Issuer
+## Creating a Self-Signed CA
 
-[cert-manager docs](https://cert-manager.io/docs/configuration/selfsigned/)
-
-In your Rancher dashboard, search "Cluster Issuer". In this case we will go with a self-signed issuer.
+[Reference](https://cert-manager.io/docs/configuration/ca/https://cert-manager.io/docs/configuration/selfsigned/#bootstrapping-ca-issuers)
 
 ```yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sandbox
+---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-  name: selfsigned-cluster-issuer
+  name: selfsigned-issuer
 spec:
   selfSigned: {}
-```
-
-## Creating a CA Certificate
-
-```yaml
+---
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -31,14 +30,10 @@ spec:
     algorithm: ECDSA
     size: 256
   issuerRef:
-    name: selfsigned-cluster-issuer
+    name: selfsigned-issuer
     kind: ClusterIssuer
     group: cert-manager.io
-```
-
-## Create a CA Issuer
-
-```yaml
+---
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
@@ -49,44 +44,90 @@ spec:
     secretName: root-secret
 ```
 
-## Creating a Certificate
-
-[cert-manager docs](https://cert-manager.io/docs/usage/certificate/)
-
-In your Rancher dashboard, search "Certificates". We will use the `ClusterIssuer` created before.
+You can then use this CA to sign other certificates for your cluster.
 
 ```yaml
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: example-com
+  name: my-selfsigned-cert
   namespace: sandbox
 spec:
-  # Secret names are always required.
-  secretName: example-com-tls # this will get created and store the tls certs
-  duration: 2160h # 90d
-  renewBefore: 360h # 15d
   isCA: false
+  commonName: my-selfsigned-cert
+  secretName: sandbox-cert
   privateKey:
-    algorithm: RSA
-    encoding: PKCS1
-    size: 2048
-  usages:
-    - server auth
-    - client auth
-  # At least one of a DNS Name, URI, or IP address is required.
-  dnsNames:
-    - example.com
-    - www.example.com
-  uris:
-    - spiffe://cluster.local/ns/sandbox/sa/example
-  ipAddresses:
-    - 192.168.0.5
-  # Issuer references are always required.
+    algorithm: ECDSA
+    size: 256
   issuerRef:
-    name: selfsigned-cluster-issuer
-    kind: ClusterIssuer
-    # This is optional since cert-manager will default to this value however
-    # if you are using an external issuer, change this to that issuer group.
+    name: my-ca-issuer
+    kind: Issuer
     group: cert-manager.io
 ```
+
+## [Trust Manager](https://cert-manager.io/docs/trust/trust-manager/)
+
+Manages TLS trust bundles for cluster so different namespaces can authorize certificates from other namespaces and communicate securely.
+
+### Install Trust Manager
+
+Ideally you would want a namespace dedicated to the trust manager (ie. `trust`). This way only the trust manager has access to modify the trust of the cluster. In this scenario we leave it out and it default to `cert-manager`. [Reference](https://cert-manager.io/docs/trust/trust-manager/#trust-namespace)
+
+```bash
+helm repo add jetstack https://charts.jetstack.io --force-update
+helm upgrade -i -n cert-manager cert-manager jetstack/cert-manager --set installCRDs=true --wait --create-namespace
+helm upgrade -i -n cert-manager trust-manager jetstack/trust-manager --wait
+```
+
+### Configure
+
+Now that we have installed Trust Manager we have access to a custom resource `Bundle` which is a culmination of all CAs we wish to trust amongst namespaces.
+
+```yaml
+apiVersion: trust.cert-manager.io/v1alpha1
+kind: Bundle
+metadata:
+  name: my-org.com # The bundle name will also be used for the target
+spec:
+  sources:
+    # Include a bundle of publicly trusted certificates which can be
+    # used to validate most TLS certificates on the internet, such as
+    # those issued by Let's Encrypt, Google, Amazon and others.
+    - useDefaultCAs: true
+
+  target:
+    # Sync the bundle to a ConfigMap called `my-org.com` in every namespace which
+    # has the label "linkerd.io/inject=enabled"
+    # All ConfigMaps will include a PEM-formatted bundle, here named "root-certs.pem"
+    # and in this case we also request binary formatted bundles in JKS and PKCS#12 formats,
+    # here named "bundle.jks" and "bundle.p12".
+    configMap:
+      key: "root-certs.pem"
+```
+
+For more configuration options, check [here](https://cert-manager.io/docs/trust/trust-manager/#quick-start-example).
+
+#### Adding CA Certificates to the Trust Bundle
+
+If you have a CA certificate you would like to add to the trust bundle (see [Creating a CA Certificate](#creating-a-self-signed-ca) above), modify the CA bundle with the secret and apply the changes.
+
+```bash
+kubectl --kubeconfig ./bin/kubeconfig.yaml apply -f - <<EOF
+apiVersion: trust.cert-manager.io/v1alpha1
+kind: Bundle
+metadata:
+  name: example-bundle
+spec:
+  sources:
+  - useDefaultCAs: true
+  # CA cert secret added here
+  - secret:
+      name: "trust-manager-example-ca-secret"
+      key: "tls.crt"
+  target:
+    configMap:
+      key: "trust-bundle.pem"
+EOF
+```
+
+Check [here](https://cert-manager.io/docs/trust/trust-manager/#usage) for other configuration options.
