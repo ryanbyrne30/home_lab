@@ -108,3 +108,13 @@ Start WireGuard
 
 Stop WireGuard
 `wg-quick down wg0`
+
+## Troubleshooting
+
+### resolvconf command not found
+
+[source](https://superuser.com/questions/1500691/usr-bin-wg-quick-line-31-resolvconf-command-not-found-wireguard-debian)
+
+```bash
+ln -s /usr/bin/resolvectl /usr/local/bin/resolvconf
+```
