@@ -29,3 +29,34 @@ VyOS can be installed as a VM just like any other ISO within Proxmox. See [insta
 Once the VM is created you can install VyOS by running `install image`. The default login is `vyos/vyos`.
 
 ### [Quick Start](https://docs.vyos.io/en/latest/quick-start.html)
+
+## Configuration
+
+### NAT
+
+#### SNAT
+
+[source](https://docs.vyos.io/en/latest/quick-start.html#nat)
+
+Create a NAT source rule (in this case named `100`) that masquerades traffic from within the network to the IP range `192.168.0.0/24` via the network device `eth0`.
+
+```bash
+set nat source rule 100 outbound-interface name 'eth0'
+set nat source rule 100 source address '192.168.0.0/24'
+set nat source rule 100 translation address masquerade
+```
+
+#### DNAT
+
+[source](https://docs.vyos.io/en/latest/configuration/nat/nat44.html#id4)
+
+Create a NAT destination rule (called `10`) that forwards HTTP traffic from port `3389` on the router from `eth0` to port `80` on the device `192.168.0.100`.
+
+```bash
+set nat destination rule 10 description 'Port Forward: HTTP to 192.168.0.100'
+set nat destination rule 10 destination port '3389'
+set nat destination rule 10 inbound-interface name 'eth0'
+set nat destination rule 10 protocol 'tcp'
+set nat destination rule 10 translation address '192.168.0.100'
+set nat destination rule 10 translation port '80'
+```
