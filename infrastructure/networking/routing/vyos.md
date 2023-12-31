@@ -32,6 +32,102 @@ Once the VM is created you can install VyOS by running `install image`. The defa
 
 ## Configuration
 
+### [SSH](https://docs.vyos.io/en/latest/configuration/service/ssh.html#dynamic-protection)
+
+Enable SSH service
+
+```bash
+set service ssh port '22'
+```
+
+Enable [FIPS](https://www.nist.gov/standardsgov/compliance-faqs-federal-information-processing-standards-fips) compliant SSH cipher suites.
+
+```bash
+set service ssh ciphers aes256-cbc
+set service ssh ciphers aaes192-cb
+set service ssh ciphers aes128-cbc
+set service ssh ciphers 3des-cbc
+set service ssh ciphers aes128-ctr
+set service ssh ciphers aes192-ctr
+set service ssh ciphers aes256-ctr
+```
+
+#### Public Key Authentication
+
+Set public key (second segment of the `.pub` file)
+
+```bash
+set system login user <username> authentication public-keys <identifier> key <key>
+
+# example
+set system login user vyos authentication public-keys me@homelab.local key AAAA...
+```
+
+Set public key type (first segment of `.pub` file)
+
+```bash
+set system login user <username> authentication public-keys <identifier> type <type>
+
+# example
+set system login user vyos authentication public-keys me@homelab.local type ssh-rsa
+```
+
+Disable password authentication
+
+```bash
+set service ssh disable-password-authentication
+```
+
+#### OTP
+
+Add One Time Pin to SSH authentication, see [here](https://docs.vyos.io/en/latest/configuration/system/login.html#otp-key-generation).
+
+#### Dynamic Protection
+
+Enable dynamic protection. Protects against brute force attacks. Auto blocks offending IPs for a period of time.
+
+```bash
+set service ssh dynamic-protection
+```
+
+Whitelist IPs and networks
+
+```bash
+set service ssh dynamic-protection allow-from <address | prefix>
+```
+
+Block source IP for timeout period in seconds. Every block increases by 1.5 seconds. Default timeout is 120 seconds.
+
+```bash
+set service ssh dynamic-protection block-time <sec>
+```
+
+#### Operation
+
+Restart service
+
+```bash
+restart ssh
+```
+
+Show logs
+
+```bash
+show log ssh [dynamic-protection]
+```
+
+Monitor logs
+
+```bash
+monitor log ssh [dynamic-protection]
+```
+
+Show list of currently blocked IPs
+
+```bash
+show ssh dynamic-protection
+```
+
 ### NAT
 
 #### SNAT
