@@ -1,0 +1,4 @@
+# Terraform
+infrastructure/tools/terraform/files/.terraform
+infrastructure/tools/terraform/files/output
+infrastructure/tools/terraform/files/*.tfvars
