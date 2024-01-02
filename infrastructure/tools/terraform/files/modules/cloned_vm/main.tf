@@ -85,8 +85,3 @@ resource "proxmox_virtual_environment_vm" "cloned_vm" {
     }
   }
 }
-
-resource "local_file" "cloned_vm" {
-    content = proxmox_virtual_environment_vm.cloned_vm.ipv4_addresses[1][0]
-    filename = var.ip_output_file
-}

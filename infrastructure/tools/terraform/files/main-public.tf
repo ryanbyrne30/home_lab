@@ -24,7 +24,6 @@ module "vyos_gateway" {
   name = "vyos-gateway"
   vm_id = 5000
   template_id = 102
-  ip_output_file = "output/public/gateway"
 
   network_devices = [{
     address = "192.168.1.1/24"
@@ -44,8 +43,7 @@ module "reverse_proxy" {
   node_name = "homelab"
   name = "reverse-proxy"
   vm_id = 5001
-  template_id = 107
-  ip_output_file = "output/public/reverse-proxy"
+  template_id = 100 
 
   network_devices = [{
     address = "192.168.1.2/24"
@@ -66,8 +64,7 @@ module "bastion" {
   node_name = "homelab"
   name = "bastion"
   vm_id = 5002
-  template_id = 107
-  ip_output_file = "output/public/bastion"
+  template_id = 100
 
   network_devices = [{
     address = "192.168.1.3/24"
@@ -88,12 +85,28 @@ module "k8s1" {
   node_name = "homelab"
   name = "k8s1"
   vm_id = 5003
-  template_id = 107
-  ip_output_file = "output/public/k8s1"
+  template_id = 100
 
   network_devices = [{
     address = "192.168.1.4/24"
     gateway = "192.168.1.1"
     vlan_id = 1
   }]
+}
+
+resource "local_file" "ansible_inventory" {
+  filename = "output/public/inventory.ini"
+  content = <<EOF
+    [gateway]
+    ${module.vyos_gateway.ip}
+
+    [proxy]
+    ${module.reverse_proxy.ip}
+
+    [bastion]
+    ${module.bastion.ip}
+
+    [k8s]
+    ${module.k8s1.ip}
+  EOF
 }

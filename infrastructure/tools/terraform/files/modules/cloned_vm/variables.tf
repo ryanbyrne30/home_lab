@@ -74,12 +74,6 @@ variable "disk_size" {
     default = 8
 }
 
-variable "ip_output_file" {
-    type = string
-    description = "File path to output IP address to"
-    default = "/tmp/terraform_cloned_vm_ip"
-}
-
 variable "network_devices" {
     type = list(object({
         bridge = optional(string, "vmbr0") 
