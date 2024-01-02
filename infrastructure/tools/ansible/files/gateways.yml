@@ -1,0 +1,7 @@
+- name: Public Gateway
+  hosts: gateway
+
+  roles:
+    - role: vyos_gateway
+      vars:
+        vlan_id: "1"
