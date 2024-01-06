@@ -1,0 +1,5 @@
+- name: Public Servers
+  hosts: [proxy, bastion, k8s]
+
+  roles:
+    - role: vlan_server
