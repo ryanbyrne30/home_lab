@@ -1,0 +1,32 @@
+---
+- name: Install NGINX
+  become: true
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+
+- name: Write config
+  become: true
+  ansible.builtin.template:
+    src: "{{ template }}"
+    dest: /etc/nginx/sites-available/default
+    backup: true
+    mode: 0644
+    owner: root
+
+- name: Create a symbolic link
+  become: true
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/default
+    dest: /etc/nginx/sites-enabled/default
+    owner: root
+    group: root
+    state: link
+    force: true
+
+- name: Restart NGINX
+  become: true
+  ansible.builtin.systemd_service:
+    name: nginx
+    state: reloaded
+    enabled: true

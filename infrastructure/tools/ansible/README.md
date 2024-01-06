@@ -26,6 +26,17 @@ Verify hosts are up:
 ansible myhosts -m ping -i inventory.ini
 ```
 
+## Configuration
+
+Exists at `/etc/ansible/ansible.cfg` or `~/.ansible.cfg`
+
+### Disable Fingerprint Checking
+
+```toml
+[defaults]
+host_key_checking = False
+```
+
 ## [Playbooks](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_intro.html#playbooks-intro)
 
 Syntax
@@ -69,9 +80,14 @@ Running the playbook
 ```bash
 ansible-playbook playbook.yaml
 
-# or
+# or with password protected ssh key
 
 ansible-playbook -i inventory_file playbook.yml -u remote_user --private-key=/path/to/your/private/key --ask-pass
+
+# or can provide sudo password
+ansible-playbook -i inventory_file playbook.yml -u remote_user --ask-become-pass
+
+
 ```
 
 Verify playbook sytax

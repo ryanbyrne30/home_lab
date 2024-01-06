@@ -97,16 +97,16 @@ module "k8s1" {
 resource "local_file" "ansible_inventory" {
   filename = "output/public/inventory.ini"
   content = <<EOF
-    [gateway]
-    ${module.vyos_gateway.ip}
+[gateway]
+${module.vyos_gateway.ip}
 
-    [proxy]
-    ${module.reverse_proxy.ip}
+[proxy]
+${module.reverse_proxy.ip}
 
-    [bastion]
-    ${module.bastion.ip}
+[bastion]
+${module.bastion.ip}
 
-    [k8s]
-    ${module.k8s1.ip}
+[k8s]
+${module.k8s1.ip}
   EOF
 }

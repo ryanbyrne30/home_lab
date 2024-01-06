@@ -1,0 +1,7 @@
+- name: Reverse Proxies
+  hosts: proxy
+
+  roles:
+    - role: reverse_proxy
+      vars:
+        template: reverse_proxy.nginx
