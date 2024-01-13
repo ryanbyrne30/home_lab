@@ -1,8 +1,9 @@
-- name: K8s Nodes
-  hosts: k8s_server
+- name: Setup K8s server
+  hosts: k8s
 
   roles:
-    - role: k8s_server
+    - role: ubuntu
     - role: reverse_proxy
       vars:
-        template: rancher_proxy.nginx
+        template: rancher_dashboard_proxy.nginx.j2
+    - role: k8s_server

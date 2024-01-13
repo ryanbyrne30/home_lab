@@ -1,5 +1,5 @@
-- name: Public Gateway
-  hosts: gateway
+- name: Setup public gateways
+  hosts: gateways
 
   roles:
     - role: vyos_gateway

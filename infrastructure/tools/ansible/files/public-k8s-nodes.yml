@@ -1,0 +1,7 @@
+- name: Setup K8s Nodes
+  hosts: nodes
+
+  roles:
+    - role: ubuntu
+    - role: vlan_server
+    - role: k8s_node

@@ -1,7 +1,0 @@
-- name: Public Servers
-  hosts: [proxy, bastion, k8s_server, k8s_node]
-
-  roles:
-    - role: vlan_server
-      vars:
-        old_hostname: ubuntu

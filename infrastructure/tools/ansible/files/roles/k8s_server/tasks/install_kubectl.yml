@@ -1,0 +1,26 @@
+- name: Ensure dependencies installed
+  become: true
+  ansible.builtin.apt:
+    name: ca-certificates
+
+- name: Check if public signing key exists
+  stat:
+    path: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  register: kubectl_key
+
+- name: Download public signing key
+  become: true
+  shell: |
+    curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  when: kubectl_key.stat.exists != true
+
+- name: Add K8s apt directory
+  become: true
+  shell: |
+    echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
+- name: Install kubectl
+  become: true
+  ansible.builtin.apt:
+    name: kubectl
+    update_cache: yes

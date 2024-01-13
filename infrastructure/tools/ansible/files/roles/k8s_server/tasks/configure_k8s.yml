@@ -1,0 +1,54 @@
+- name: Configure Kubernetes
+  environment:
+    KUBECONFIG: "{{ k8s_config }}"
+  block:
+    - name: Allow kubectl access to K8s config
+      become: true
+      ansible.builtin.file:
+        path: "{{ k8s_config }}"
+        owner: "{{ ansible_user }}"
+
+    - name: Install Helm charts for K8s
+      shell: |
+        helm repo add rancher-stable https://releases.rancher.com/server-charts/stable
+
+    - name: Create cattle-system namespace
+      shell: |
+        kubectl create namespace cattle-system
+      ignore_errors: true
+
+    - name: Install cert-manager
+      shell: |
+        kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.12.7/cert-manager.crds.yaml
+      ignore_errors: true
+
+    - name: Add Jetstack Helm repo
+      shell: |
+        helm repo add jetstack https://charts.jetstack.io
+      ignore_errors: true
+
+    - name: Update helm
+      shell: |
+        helm repo update
+
+    - name: Install cert-manager Helm chart
+      shell: |
+        helm install cert-manager jetstack/cert-manager \
+          --namespace cert-manager \
+          --create-namespace
+      ignore_errors: true
+
+    - name: Install Rancher with Helm and cert-manager
+      shell: |
+        helm install rancher rancher-stable/rancher \
+          --namespace cattle-system \
+          --set hostname=rancher.homelab.local \
+      ignore_errors: true
+
+  always:
+    - name: Remove kubectl access to K8s config
+      become: true
+      ansible.builtin.file:
+        path: "{{ k8s_config }}"
+        owner: "{{ ansible_become_user }}"
+        group: "{{ ansible_become_user }}"

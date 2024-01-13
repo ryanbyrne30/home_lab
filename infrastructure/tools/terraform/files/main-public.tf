@@ -11,7 +11,7 @@ module "vlan1" {
   ipv4_cidr = "192.168.1.0/24"
 }
 
-module "vyos_gateway" {
+module "public_gateway" {
   vm_depends_on = [ module.vlan1 ]
   source = "./modules/cloned_vm"
 
@@ -21,7 +21,8 @@ module "vyos_gateway" {
   use_qemu_agent = true 
 
   node_name = "homelab"
-  name = "vyos-gateway"
+  name = "public-gateway"
+  description = "Public VyOS gateway"
   vm_id = 5000
   template_id = 102
 
@@ -31,8 +32,8 @@ module "vyos_gateway" {
   }]
 }
 
-module "reverse_proxy" {
-  vm_depends_on = [ module.vyos_gateway ]
+module "public_proxy" {
+  vm_depends_on = [ module.public_gateway ]
   source = "./modules/cloned_vm"
 
   proxmox_endpoint = var.proxmox_endpoint
@@ -41,7 +42,8 @@ module "reverse_proxy" {
   use_qemu_agent = true 
 
   node_name = "homelab"
-  name = "reverse-proxy"
+  name = "public-proxy"
+  description = "Public reverse proxy into services on public VLAN"
   vm_id = 5001
   template_id = 100 
 
@@ -52,8 +54,8 @@ module "reverse_proxy" {
   }]
 }
 
-module "bastion" {
-  vm_depends_on = [ module.vyos_gateway ]
+module "public_bastion" {
+  vm_depends_on = [ module.public_gateway ]
   source = "./modules/cloned_vm"
 
   proxmox_endpoint = var.proxmox_endpoint
@@ -62,7 +64,7 @@ module "bastion" {
   use_qemu_agent = true 
 
   node_name = "homelab"
-  name = "bastion"
+  name = "public-bastion"
   vm_id = 5002
   template_id = 100
 
@@ -73,8 +75,8 @@ module "bastion" {
   }]
 }
 
-module "k8s1" {
-  vm_depends_on = [ module.vyos_gateway ]
+module "public_node1" {
+  vm_depends_on = [ module.public_gateway ]
   source = "./modules/cloned_vm"
 
   proxmox_endpoint = var.proxmox_endpoint
@@ -83,7 +85,7 @@ module "k8s1" {
   use_qemu_agent = true 
 
   node_name = "homelab"
-  name = "k8s1"
+  name = "public-node1"
   vm_id = 5003
   template_id = 100
 
@@ -98,48 +100,20 @@ module "k8s1" {
   }]
 }
 
-module "k8s2" {
-  vm_depends_on = [ module.k8s1]
-  source = "./modules/cloned_vm"
-
-  proxmox_endpoint = var.proxmox_endpoint
-  proxmox_username = var.proxmox_username
-  proxmox_password = var.proxmox_password
-  use_qemu_agent = true 
-
-  node_name = "homelab"
-  name = "k8s2"
-  vm_id = 5004
-  template_id = 100
-
-  cpus = 2
-  memory = 4096
-  disk_size = 100
-
-  network_devices = [{
-    address = "192.168.1.5/24"
-    gateway = "192.168.1.1"
-    vlan_id = 1
-  }]
-}
-
-
-resource "local_file" "ansible_inventory" {
+resource "local_file" "public_ansible_inventory" {
   filename = "output/public/inventory.ini"
   content = <<EOF
-[gateway]
-${join("\n", module.vyos_gateway.ip)}
+[gateways]
+${join("\n", module.public_gateway.ip)}
 
-[proxy]
-${join("\n", module.reverse_proxy.ip)} hostname=proxy
+[proxies]
+${join("\n", module.public_proxy.ip)} hostname=proxy
 
-[bastion]
-${join("\n", module.bastion.ip)} hostname=bastion
+[bastions]
+${join("\n", module.public_bastion.ip)} hostname=bastion
 
-[k8s_server]
-${join("\n", module.k8s1.ip)} hostname=k8s1 disk_size=100
+[nodes]
+${join("\n", module.public_node1.ip)} hostname=public_node1 disk_size=100
 
-[k8s_node]
-${join("\n", module.k8s2.ip)} hostname=k8s2 disk_size=100 k8s_server_ip=${join("\n", module.k8s1.ip)}
 EOF
 }
