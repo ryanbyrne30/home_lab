@@ -39,7 +39,7 @@ host_key_checking = False
 
 ## [Playbooks](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_intro.html#playbooks-intro)
 
-Syntax
+### Syntax
 
 ```yaml
 # playbook.yaml
@@ -75,22 +75,36 @@ Syntax
         state: started
 ```
 
-Running the playbook
+### Running Playbooks
 
 ```bash
 ansible-playbook playbook.yaml
 
-# or with password protected ssh key
+# or with an encrypted ssh key
 
 ansible-playbook -i inventory_file playbook.yml -u remote_user --private-key=/path/to/your/private/key --ask-pass
 
 # or can provide sudo password
 ansible-playbook -i inventory_file playbook.yml -u remote_user --ask-become-pass
-
-
 ```
 
-Verify playbook sytax
+#### With encrypted SSH key
+
+```bash
+ansible-playbook -i inventory_file playbook.yml -u remote_user --private-key=/path/to/your/private/key --ask-pass
+```
+
+If you find this doesn't work try creating an ssh agent...
+
+```bash
+eval $(ssh-agent)
+ssh-add ~/.ssh/id_rsa
+ssh-add -l
+```
+
+Then you will not have to use `--ask-pass`
+
+### Verify playbook sytax
 
 ```bash
 ansible-lint playbook.yml

@@ -1,0 +1,5 @@
+- name: K8s Nodes
+  hosts: k8s_node
+
+  roles:
+    - role: k8s_node

@@ -1,0 +1,130 @@
+- name: Create Rancher directory
+  become: true
+  shell: |
+    mkdir -p /etc/rancher/rke2
+
+- name: Create config file
+  become: true
+  ansible.builtin.template:
+    src: "config.j2"
+    dest: /etc/rancher/rke2/config.yaml
+
+- name: Install RKE2
+  become: true
+  shell: |
+    export INSTALL_RKE2_METHOD=tar 
+    curl -sfL https://get.rke2.io | sh -
+
+- name: Enable RKE2 service
+  become: true
+  shell: |
+    systemctl enable rke2-server.service
+
+- name: Start RKE2 service
+  become: true
+  shell: |
+    systemctl start rke2-server.service
+
+# Install Helm
+- name: Add Helm GPG key
+  become: true
+  shell: |
+    curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
+
+- name: Install apt-transport-https
+  become: true
+  ansible.builtin.apt:
+    name: apt-transport-https
+
+- name: Install Helm keyrings
+  become: true
+  shell: |
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+
+- name: Install helm
+  become: true
+  ansible.builtin.apt:
+    update_cache: yes
+    name: helm
+
+# Install kubectl
+- name: Ensure dependencies installed
+  become: true
+  ansible.builtin.apt:
+    name: ca-certificates
+
+- name: Check if public signing key exists
+  stat:
+    path: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  register: kubectl_key
+
+- name: Download public signing key
+  become: true
+  shell: |
+    curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  when: kubectl_key.stat.exists != true
+
+- name: Add K8s apt directory
+  become: true
+  shell: |
+    echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
+- name: Install kubectl
+  become: true
+  ansible.builtin.apt:
+    name: kubectl
+    update_cache: yes
+
+# Install helm charts
+- name: Install Helm charts for K8s
+  shell: |
+    helm repo add rancher-stable https://releases.rancher.com/server-charts/stable
+
+# Setup K8s
+- name: Set K8s config path
+  ansible.builtin.set_fact:
+    k8s_config: /etc/rancher/rke2/rke2.yaml
+
+- name: Allow kubectl access to K8s config
+  ansible.builtin.file:
+    path: "{{ k8s_config }}"
+    owner: "{{ ansible_user }}"
+
+- name: Create cattle-system namespace
+  shell: |
+    kubectl --kubeconfig={{ k8s_config }} create namespace cattle-system
+  ignore_errors: true
+
+- name: Install cert-manager
+  shell: |
+    kubectl --kubeconfig={{ k8s_config }} apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.12.7/cert-manager.crds.yaml
+  ignore_errors: true
+
+- name: Add Jetstack Helm repo
+  shell: |
+    KUBECONFIG={{ k8s_config }} helm repo add jetstack https://charts.jetstack.io
+  ignore_errors: true
+
+- name: Update helm
+  shell: |
+    KUBECONFIG={{ k8s_config }} helm repo update
+
+- name: Install cert-manager Helm chart
+  shell: |
+    KUBECONFIG={{ k8s_config }} helm install cert-manager jetstack/cert-manager \
+      --namespace cert-manager \
+      --create-namespace
+  ignore_errors: true
+
+- name: Install Rancher with Helm and cert-manager
+  shell: |
+    KUBECONFIG={{ k8s_config }} helm install rancher rancher-stable/rancher \
+      --namespace cattle-system \
+      --set hostname=rancher.homelab.local \
+  ignore_errors: true
+
+- name: Remove kubectl access to K8s config
+  become: true
+  ansible.builtin.file:
+    path: "{{ k8s_config }}"
+    owner: root

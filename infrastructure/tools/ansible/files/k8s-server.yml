@@ -1,0 +1,8 @@
+- name: K8s Nodes
+  hosts: k8s_server
+
+  roles:
+    - role: k8s_server
+    - role: reverse_proxy
+      vars:
+        template: rancher_proxy.nginx

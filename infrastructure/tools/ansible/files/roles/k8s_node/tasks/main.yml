@@ -1,0 +1,27 @@
+- name: Create Rancher directory
+  become: true
+  shell: |
+    mkdir -p /etc/rancher/rke2
+
+- name: Create config file
+  become: true
+  ansible.builtin.template:
+    src: "config.j2"
+    dest: /etc/rancher/rke2/config.yaml
+
+- name: Install RKE2
+  become: true
+  shell: |
+    export INSTALL_RKE2_METHOD=tar 
+    export INSTALL_RKE2_TYPE=agent
+    curl -sfL https://get.rke2.io | sh -
+
+- name: Enable RKE2 agent
+  become: true
+  shell: |
+    systemctl enable rke2-agent.service
+
+- name: Start RKE2 service
+  become: true
+  shell: |
+    systemctl start rke2-agent.service
