@@ -21,7 +21,12 @@
   shell: |
     systemctl enable rke2-agent.service
 
-- name: Start RKE2 service
+- name: Start RKE2 agent
   become: true
   shell: |
     systemctl start rke2-agent.service
+
+- name: Increase memory value for SonarQube
+  become: true
+  shell: |
+    sysctl -w vm.max_map_count=262144

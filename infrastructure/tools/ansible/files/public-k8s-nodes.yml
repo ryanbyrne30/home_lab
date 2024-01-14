@@ -5,3 +5,8 @@
     - role: ubuntu
     - role: vlan_server
     - role: k8s_node
+
+  tasks:
+    - name: Create SonarQube path
+      shell: |
+        mkdir -p /home/{{ ansible_user }}/sonarqube

@@ -18,6 +18,7 @@ SonarQube is a self-managed, automatic code review tool that systematically help
   - [Add a Certificate for SonarQube](#add-a-certificate-for-sonarqube)
   - [Add Ingress Using Rancher Dashboard](#add-ingress-using-rancher-dashboard)
 - [SonarLint](#sonarlint)
+- [Setting Up Encryption](#setting-up-encryption)
 
 ## Install
 
@@ -110,9 +111,15 @@ sysctl -w vm.max_map_count=262144
 
 ### Add a Certificate for SonarQube
 
-Follow [these steps](../../../infrastructure/tools/kubernetes/rancher/certificates/README.md) to create a CA and CA signed certificate for SonarQube.
+[Reference](https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/kubernetes-resources-setup/encrypt-http-communication)
+
+Follow [these steps](../../../infrastructure/server_management/certificates/README.md#using-lets-encrypt) to create a TLS certificate and key using Let's Encrypt for your domain.
+
+Add the TLS certificate and key to the NGINX reverse proxy.
 
 In your Rancher dashboard, under "Secrets" add the certificate and key you just created.
+
+You can then add the TLS secret to the ingress for SonarQube. The TLS certificates should match been the ingress and the reverse proxy.
 
 ### Add Ingress Using Rancher Dashboard
 
@@ -136,3 +143,23 @@ The default login is `admin/admin`.
 ## SonarLint
 
 In VSCode, install SonarLint and add a connection to SonarQube. It should ask you to trust the CA we created earlier.
+
+## [Setting Up Encryption](https://docs.sonarsource.com/sonarqube/9.9/instance-administration/security/#settings-encryption)
+
+Go to the SonarQube dashboard **Administration** > **Configuration** > **Encryption** and generate an encryption key.
+
+Create a secret with the key value pair:
+`sonar-secret.txt` = `ENCRYPTION_KEY`
+
+On the host create a file `values.yaml` and update the SonarQube helm chart with the secret.
+
+```yaml
+# values.yaml
+sonarSecretKey: NAME_OF_SECRET_CREATED_PRIOR
+```
+
+```bash
+helm upgrade -n sonarqube -f values.yaml sonarqube sonarqube/sonarqube
+```
+
+You may need to restart the SonarQube deployment to see the changes. Other configurations can be found [here](https://github.com/SonarSource/helm-chart-sonarqube/tree/master/charts/sonarqube).
