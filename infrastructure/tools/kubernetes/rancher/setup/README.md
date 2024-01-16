@@ -11,6 +11,7 @@
   - [Configure SSL](#configure-ssl)
   - [Install Rancher with Helm and Certs](#install-rancher-with-helm-and-certs)
 - [Access Rancher](#access-rancher)
+- [Firewall](#firewall)
 
 ## Prerequisites
 
@@ -121,3 +122,7 @@ Login with the bootstrapped password or run this to get the password
 ```bash
 kubectl get secret --namespace cattle-system bootstrap-secret -o go-template='{{.data.bootstrapPassword|base64decode}}{{"\n"}}'
 ```
+
+## Firewall
+
+Remember to open up [these ports](https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/installation-requirements/port-requirements) on your firewall.
