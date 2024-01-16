@@ -5,7 +5,6 @@
     pv_path: pv.yml
     k8s_config: /etc/rancher/rke2/rke2.yaml
     temp_config: /home/{{ ansible_user }}/config.yaml
-    encryption_key: "{{ sonarqube_encryption_key }}"
 
 - name: Allow kubectl access to K8s config
   become: true

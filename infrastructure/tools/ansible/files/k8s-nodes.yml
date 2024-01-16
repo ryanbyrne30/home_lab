@@ -3,7 +3,6 @@
 
   roles:
     - role: ubuntu
-    - role: vlan_server
     - role: k8s_node
 
   tasks:

@@ -2,15 +2,15 @@
   hosts: k8s
 
   roles:
-    - role: ubuntu
+    # - role: ubuntu
 
-    - role: reverse_proxy
-      vars:
-        template: rancher_dashboard_proxy.nginx.j2
+    # - role: reverse_proxy
+    #   vars:
+    #     template: rancher_dashboard_proxy.nginx.j2
 
-    - role: k8s_server
+    # - role: k8s_server
 
     - role: sonarqube
       vars:
         storage_path: "/home/{{ ansible_user }}/sonarqube"
-        node_hostname: public-node1
+        node_hostname: k8s-node1
