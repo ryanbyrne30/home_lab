@@ -16,10 +16,6 @@
   environment:
     KUBECONFIG: "{{ temp_config }}"
   block:
-    - name: Create path if not exists
-      shell: |
-        mkdir -p {{ storage_path }}
-
     - name: Create PersistentVolume template
       ansible.builtin.template:
         src: "pv.yml.j2"

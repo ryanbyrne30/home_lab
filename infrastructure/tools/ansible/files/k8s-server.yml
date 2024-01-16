@@ -13,8 +13,3 @@
         template: rancher_dashboard_proxy.nginx.j2
 
     - role: k8s_server
-
-    - role: sonarqube
-      vars:
-        storage_path: "/home/{{ ansible_user }}/sonarqube"
-        node_hostname: k8s-node1

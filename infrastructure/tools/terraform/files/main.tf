@@ -22,7 +22,7 @@ module "k8s_server" {
   node_name = "homelab"
   name = "k8s-server"
   description = "Hosts Rancher dashboard to control public and internal clusters"
-  vm_id = 1001
+  vm_id = 5001
   template_id = 100
 
   cpus = 2
@@ -46,7 +46,7 @@ module "k8s_node1" {
 
   node_name = "homelab"
   name = "k8s-node1"
-  vm_id = 5003
+  vm_id = 5002
   template_id = 100
 
   cpus = 2

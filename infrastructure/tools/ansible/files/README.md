@@ -11,7 +11,11 @@ ssh-add -l
 Setup servers
 
 ```bash
-ansible-playbook -i ../../terraform/files/output/public/inventory.yml public-servers.yml -u USER --private-key=~/.ssh/id_rsa --ask-become-pass
+ansible-playbook -i ../../terraform/files/output/k8s/inventory.yml public-servers.yml -u USER --private-key=~/.ssh/id_rsa --ask-become-pass
 ```
 
-Following this, SSH into the Rancher guest VM and retrieve the
+To spin up from scratch run these playbooks in order:
+
+- `k8s-server.yml`
+- `k8s-nodes.yml`
+- `sonarqube.yml`
