@@ -1,0 +1,5 @@
+- name: Grafana
+  hosts: k8s
+
+  roles:
+    - role: grafana

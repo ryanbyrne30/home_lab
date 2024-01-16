@@ -1,0 +1,42 @@
+# Creates a Grafana container running on a K8s node
+---
+- name: Set facts
+  ansible.builtin.set_fact:
+    k8s_config: /etc/rancher/rke2/rke2.yaml
+    temp_config: /home/{{ ansible_user }}/config.yaml
+
+- name: Allow kubectl access to K8s config
+  become: true
+  shell: |
+    cp {{ k8s_config }} {{ temp_config }}
+    chown {{ ansible_user }}:{{ ansible_user }} {{ temp_config }}
+
+- name: Install Grafana
+  environment:
+    KUBECONFIG: "{{ temp_config }}"
+
+  block:
+    - name: Add Grafana repo
+      kubernetes.core.helm_repository:
+        name: grafana
+        repo_url: https://grafana.github.io/helm-charts
+
+    - name: Create Grafana namespace
+      kubernetes.core.k8s:
+        name: grafana
+        api_version: v1
+        kind: Namespace
+        state: present
+
+    - name: Install Grafana from Helm
+      kubernetes.core.helm:
+        name: grafana
+        chart_ref: grafana/grafana
+        release_namespace: grafana
+
+  always:
+    - name: Remove kubectl access to K8s config
+      become: true
+      ansible.builtin.file:
+        path: "{{ temp_config }}"
+        state: absent
