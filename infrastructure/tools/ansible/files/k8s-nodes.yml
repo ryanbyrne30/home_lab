@@ -1,0 +1,15 @@
+# --extra-vars
+# k8s_server_ip: IP of K8s server
+# k8s_server_token: K8s server node token found at /var/lib/rancher/rke2/server/node-token
+
+- name: Setup K8s Nodes
+  hosts: nodes
+
+  roles:
+    - role: ubuntu
+    - role: k8s_node
+
+  tasks:
+    - name: Create SonarQube path
+      shell: |
+        mkdir -p /home/{{ ansible_user }}/sonarqube

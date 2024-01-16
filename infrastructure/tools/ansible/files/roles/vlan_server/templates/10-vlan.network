@@ -1,0 +1,8 @@
+# /etc/systemd/network/10-public.network
+# Docs: https://www.freedesktop.org/software/systemd/man/latest/systemd-networkd.service.html
+
+[Match]
+Name={{ vlan_interface }}
+
+[Network]
+DHCP=yes

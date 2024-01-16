@@ -1,0 +1,25 @@
+---
+- name: Configure VyOS router
+
+  vars:
+    # reference: https://docs.ansible.com/ansible/latest/network/user_guide/platform_vyos.html#connections-available
+    ansible_connection: ansible.netcommon.network_cli
+    ansible_network_os: vyos.vyos.vyos
+
+  vyos.vyos.vyos_config:
+    backup: yes
+    lines:
+      - set interfaces ethernet eth1 address '192.168.{{ vlan_id }}.1/24'
+      - set interfaces ethernet eth1 description 'LAN'
+      - set service dhcp-server shared-network-name LAN subnet 192.168.{{ vlan_id }}.0/24 default-router '192.168.{{ vlan_id }}.1'
+      - set service dhcp-server shared-network-name LAN subnet 192.168.{{ vlan_id }}.0/24 name-server '192.168.{{ vlan_id }}.1'
+      - set service dhcp-server shared-network-name LAN subnet 192.168.{{ vlan_id }}.0/24 domain-name 'vyos.net'
+      - set service dhcp-server shared-network-name LAN subnet 192.168.{{ vlan_id }}.0/24 lease '86400'
+      - set service dhcp-server shared-network-name LAN subnet 192.168.{{ vlan_id }}.0/24 range 0 start '192.168.{{ vlan_id }}.11'
+      - set service dhcp-server shared-network-name LAN subnet 192.168.{{ vlan_id }}.0/24 range 0 stop '192.168.{{ vlan_id }}.254'
+      - set service dns forwarding cache-size '0'
+      - set service dns forwarding listen-address '192.168.{{ vlan_id }}.1'
+      - set service dns forwarding allow-from '192.168.{{ vlan_id }}.0/24'
+      - set nat source rule 100 outbound-interface name 'eth0'
+      - set nat source rule 100 source address '192.168.{{ vlan_id }}.0/24'
+      - set nat source rule 100 translation address masquerade

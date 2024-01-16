@@ -1,0 +1,22 @@
+---
+- name: Get vlan (second) network interface name
+  ansible.builtin.shell: |
+    ls /sys/class/net | grep en | tail -n1
+  register: INTERFACE
+
+- name: Set interface as fact
+  ansible.builtin.set_fact:
+    vlan_interface: "{{ INTERFACE.stdout_lines[0] }}"
+
+- name: Write network config for vlan interface
+  become: true
+  ansible.builtin.template:
+    src: "10-vlan.network"
+    dest: /etc/systemd/network/10-vlan.network
+
+- name: Restart systemd-networkd.service so changes take affect
+  become: true
+  ansible.builtin.systemd_service:
+    name: systemd-networkd
+    state: restarted
+    enabled: true

@@ -54,7 +54,7 @@ Create a config file at `/etc/rancher/rke2/config.yaml`
 
 token: my-shared-secret
 tls-san:
-  - rancher.homelab
+  - homelab.local
   #- another-kubernetes-domain.com
 ```
 
@@ -63,7 +63,8 @@ tls-san:
 Run the install command and enable and start rke2
 
 ```bash
-curl -sfL https://get.rke2.io | sh -
+# Checkout https://get.rke2.io to see other config variables
+INSTALL_RKE2_METHOD=tar curl -sfL https://get.rke2.io | sh -
 systemctl enable rke2-server.service
 systemctl start rke2-server.service
 ```
@@ -88,9 +89,6 @@ To join additional nodes, configure each node with the same shared token. On eac
 # /etc/rancher/rke2/config.yaml
 token: my-shared-secret
 server: https://<DNS-DOMAIN>:9345
-tls-san:
-  - rancher.homelab.local
-  #- another-kubernetes-domain.com
 ```
 
 Example
@@ -99,17 +97,15 @@ Example
 # /etc/rancher/rke2/config.yaml
 token: my-shared-secret
 server: https://192.168.1.16:9345
-tls-san:
-  - rancher.homelab.local
-  #- another-kubernetes-domain.com
 ```
 
 Run the installer and enable, then start rke2
 
 ```bash
-curl -sfL https://get.rke2.io | sh -
-systemctl enable rke2-server.service
-systemctl start rke2-server.service
+# Checkout https://get.rke2.io to see other config variables
+INSTALL_RKE2_METHOD=tar INSTALL_RKE2_TYPE=agent  curl -sfL https://get.rke2.io | sh -
+systemctl enable rke2-agent.service
+systemctl start rke2-agent.service
 ```
 
 ### Confirm RKE2 is Running

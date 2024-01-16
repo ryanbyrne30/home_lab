@@ -4,13 +4,11 @@ Proxmox Virtual Environment is a complete, open-source server management platfor
 
 ## [Download](https://www.proxmox.com/en/downloads/proxmox-virtual-environment)
 
-## [Documentation](https://www.proxmox.com/en/downloads/proxmox-virtual-environment/documentation)
+## [Official Documentation](https://www.proxmox.com/en/downloads/proxmox-virtual-environment/documentation)
 
-## Good Practice
+## Creating Templates
 
-### Creating Templates
-
-#### Prep machine
+### Prep machine
 
 ```bash
 # update and upgrade
@@ -31,7 +29,7 @@ sudo apt clean && sudo apt autoremove
 
 Then shut down the machine
 
-#### Post shutdown
+### Post shutdown
 
 - Remove the ISO from Hardware
 - Add CloudInit Drive to Hardware
@@ -43,3 +41,29 @@ Then shut down the machine
 # reset ssh host keys
 sudo dpkg-reconfigure openssh-server
 ```
+
+## [QEMU Guest Agent](https://pve.proxmox.com/wiki/Qemu-guest-agent)
+
+Allows Proxmox to communicate with guest VMs and containers. Useful when running Terraform and you want info from the created resource.
+
+**On the client:**
+
+```bash
+sudo apt-get install qemu-guest-agent
+sudo systemctl enable qemu-guest-agent
+sudo reboot
+```
+
+**On the Proxmox dashboard:**
+
+Go to "Options" -> "QEMU Guest Agent". Make sure "Use QEMU Guest Agent" and "Run guest-trim" are on.
+
+**Testing QEMU Guest Agent installation**
+
+On the Proxmox server run:
+
+```bash
+qm agent <VM_ID> ping
+```
+
+This should return without an error if installed properly.

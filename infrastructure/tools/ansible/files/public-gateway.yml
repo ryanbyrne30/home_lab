@@ -1,0 +1,7 @@
+- name: Setup public gateways
+  hosts: gateways
+
+  roles:
+    - role: vyos_gateway
+      vars:
+        vlan_id: "1"

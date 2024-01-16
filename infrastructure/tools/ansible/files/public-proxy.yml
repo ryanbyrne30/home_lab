@@ -1,0 +1,9 @@
+- name: Setup public reverse proxies
+  hosts: proxies
+
+  roles:
+    - role: ubuntu
+    - role: vlan_server
+    - role: reverse_proxy
+      vars:
+        template: public_proxy.nginx.j2

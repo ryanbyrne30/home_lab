@@ -1,0 +1,4 @@
+- ansible.builtin.import_tasks: install_rke2.yml
+- ansible.builtin.import_tasks: install_helm.yml
+- ansible.builtin.import_tasks: install_kubectl.yml
+- ansible.builtin.import_tasks: configure_k8s.yml

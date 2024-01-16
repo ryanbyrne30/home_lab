@@ -55,3 +55,21 @@ openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 3
 ## Adding a CA Certificate to the Trust Store
 
 [Reference](https://ubuntu.com/server/docs/security-trust-store)
+
+## Using [Let's Encrypt](https://letsencrypt.org/getting-started/)
+
+[Reference](https://marcincuber.medium.com/lets-encrypt-generating-wildcard-ssl-certificate-using-certbot-ae1c9484c101)
+
+Manually creating certs using certbot for your domain and subdomains.
+
+```bash
+certbot certonly --manual \
+  --preferred-challenges=dns \
+  --email marcin@hotmail.com \
+  --server https://acme-v02.api.letsencrypt.org/directory \
+  --agree-tos \
+  -d “*.domain.com” \
+  -d “domain.com”
+```
+
+The certificate and key can then be used by your reverse proxy and ingresses.
