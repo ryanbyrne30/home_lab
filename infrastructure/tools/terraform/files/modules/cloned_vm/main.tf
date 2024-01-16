@@ -74,6 +74,7 @@ resource "proxmox_virtual_environment_vm" "cloned_vm" {
   # keeping default connection so Terraform can manage it 
   network_device {
     bridge = "vmbr0"
+    firewall = true
   }
 
   dynamic "network_device" {

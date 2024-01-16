@@ -28,12 +28,6 @@ module "k8s_server" {
   cpus = 2
   memory = 4096
   disk_size = 100
-
-  network_devices = [{
-    address = "192.168.1.5/24"
-    gateway = "192.168.1.1"
-    vlan_id = 1
-  }]
 }
 
 module "k8s_node1" {
@@ -52,12 +46,6 @@ module "k8s_node1" {
   cpus = 2
   memory = 4096
   disk_size = 100
-
-  network_devices = [{
-    address = "192.168.1.4/24"
-    gateway = "192.168.1.1"
-    vlan_id = 1
-  }]
 }
 
 resource "local_file" "k8s_ansible_inventory" {
