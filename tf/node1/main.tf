@@ -6,7 +6,7 @@ terraform {
         # set AWS secret access key: export AWS_SECRET_ACCESS_KEY=AAAA...
 
         bucket = "ryanbyrne30-homelab-config" 
-        key = "terraform/.tfstate"
+        key = "terraform/node1.tfstate"
         region = "us-west-1" 
     }
 }
@@ -31,7 +31,7 @@ module "k8s_server" {
 }
 
 resource "local_file" "k8s_ansible_inventory" {
-  filename = "output/k8s/inventory.ini"
+  filename = var.inventory_file 
   content = <<EOF
 [k8s]
 ${join("\n", module.k8s_server.ip)} hostname=k8s-server disk_size=100

@@ -1,0 +1,5 @@
+- name: Log agent
+  hosts: agent
+
+  roles:
+    - role: log-agent

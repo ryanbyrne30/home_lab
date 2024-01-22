@@ -1,0 +1,13 @@
+- name: Configure syslog to point to port
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/rsyslog.conf
+    regexp: '^\*\.\*'
+    line: "*.* @127.0.0.1:{{ syslog_port }}"
+
+- name: Restart syslog
+  become: true
+  ansible.builtin.systemd_service:
+    state: restarted
+    name: rsyslog
+    enabled: true

@@ -36,3 +36,8 @@
   shell: |
     systemctl start rke2-server.service
   when: rke2_service.status.ActiveState != "active"
+
+- name: Increase memory value for SonarQube
+  become: true
+  shell: |
+    sysctl -w vm.max_map_count=262144

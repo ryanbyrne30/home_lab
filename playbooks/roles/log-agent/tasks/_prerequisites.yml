@@ -1,0 +1,15 @@
+- name: Update
+  become: true
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Install chrony
+  become: true
+  ansible.builtin.apt:
+    name: chrony
+    state: present
+
+- name: Set ulimit
+  become: true
+  shell: |
+    ulimit -n 65535

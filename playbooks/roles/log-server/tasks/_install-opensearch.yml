@@ -1,0 +1,143 @@
+- name: Assert variables
+  assert:
+    that:
+      - opensearch_name is defined
+      - opensearch_data_path is defined
+      - opensearch_log_path is defined
+      - opensearch_port is defined
+      - opensearch_dir is defined
+      - opensearch_fuser is defined
+      - opensearch_fgroup is defined
+      - tls_cert_src is defined
+      - tls_key_src is defined
+      - tls_ca_src is defined
+
+- name: Install dependencies
+  become: true
+  block:
+    - name: Update apt
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Install lsb-release
+      ansible.builtin.apt:
+        name: lsb-release
+        state: present
+
+    - name: Install ca-certificates
+      ansible.builtin.apt:
+        name: ca-certificates
+        state: present
+
+    - name: Install curl
+      ansible.builtin.apt:
+        name: curl
+        state: present
+
+    - name: Install gnupg2
+      ansible.builtin.apt:
+        name: gnupg2
+        state: present
+
+- name: Update GPG key
+  become: true
+  shell: |
+    curl -o- https://artifacts.opensearch.org/publickeys/opensearch.pgp | gpg --dearmor --batch --yes -o /usr/share/keyrings/opensearch-keyring
+
+- name: Create apt repo for OpenSearch
+  become: true
+  shell: |
+    echo "deb [signed-by=/usr/share/keyrings/opensearch-keyring] https://artifacts.opensearch.org/releases/bundle/opensearch/2.x/apt stable main" | tee /etc/apt/sources.list.d/opensearch-2.x.list
+
+- name: Ensure group exists
+  ansible.builtin.group:
+    name: "{{ opensearch_fgroup }}"
+    state: present
+
+- name: Create opensearch user
+  ansible.builtin.user:
+    name: "{{ opensearch_fuser }}"
+    group: "{{ opensearch_fgroup }}"
+
+- name: Create directory
+  become: true
+  ansible.builtin.file:
+    path: "{{ opensearch_dir }}"
+    state: directory
+    owner: "{{ opensearch_fuser }}"
+    group: "{{ opensearch_fgroup }}"
+    mode: "0755"
+
+- name: Remove demo certs
+  become: true
+  ansible.builtin.file:
+    path: "{{ opensearch_dir }}/root-ca.pem"
+    state: absent
+
+- name: Remove demo certs
+  become: true
+  ansible.builtin.file:
+    path: "{{ opensearch_dir }}/esnode.pem"
+    state: absent
+
+- name: Remove demo certs
+  become: true
+  ansible.builtin.file:
+    path: "{{ opensearch_dir }}/esnode-key.pem"
+    state: absent
+
+- name: Copy TLS cert
+  become: true
+  ansible.builtin.copy:
+    src: "{{ tls_cert_src }}"
+    dest: "{{ opensearch_dir }}/tls.crt"
+    owner: "{{ opensearch_fuser }}"
+    group: "{{ opensearch_fgroup }}"
+    mode: "0644"
+
+- name: Copy TLS key
+  become: true
+  ansible.builtin.copy:
+    src: "{{ tls_key_src }}"
+    dest: "{{ opensearch_dir }}/tls.key"
+    owner: "{{ opensearch_fuser }}"
+    group: "{{ opensearch_fgroup }}"
+    mode: "0600"
+
+- name: Copy TLS CA cert
+  become: true
+  ansible.builtin.copy:
+    src: "{{ tls_ca_src }}"
+    dest: "{{ opensearch_dir }}/ca.crt"
+    owner: "{{ opensearch_fuser }}"
+    group: "{{ opensearch_fgroup }}"
+    mode: "0600"
+
+- name: Install OpenSearch
+  become: true
+  ansible.builtin.apt:
+    name: opensearch
+    state: present
+    update_cache: yes
+
+- name: Copy config
+  become: true
+  ansible.builtin.template:
+    src: opensearch-https.yml.j2
+    dest: "{{ opensearch_dir }}/opensearch.yml"
+
+- name: Create data directory
+  become: true
+  ansible.builtin.file:
+    path: "{{ opensearch_data_path }}"
+    state: directory
+    owner: "{{ opensearch_fuser }}"
+    group: "{{ opensearch_fgroup }}"
+    mode: "0700"
+
+- name: Enable OpenSearch service
+  become: true
+  ansible.builtin.systemd_service:
+    state: restarted
+    name: opensearch
+    enabled: true

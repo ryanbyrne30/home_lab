@@ -1,0 +1,34 @@
+<source>
+	@type tail
+	path /var/log/syslog
+	pos_file /var/log/fluent/syslog.pos
+	tag system.syslog
+	<parse>
+		@type syslog
+	</parse>
+</source>
+
+<source>
+	@type syslog
+	@id input_syslog
+	port {{ syslog_port }} 
+	tag system 
+</source>
+
+<match system.**>
+#	with_transporter_log true
+#	@log_level trace 
+
+	@type opensearch
+	@id output_opensearch
+	validate_client_version true
+	host {{ opensearch_nginx_server_name }} 
+	port {{ opensearch_nginx_port }} 
+	logstash_format true
+	scheme https
+	user {{ opensearch_user }} 
+	password {{ opensearch_pass }} 
+	ssl_verify false
+	ssl_version TLSv1_2
+	include_tag_key true
+</match>

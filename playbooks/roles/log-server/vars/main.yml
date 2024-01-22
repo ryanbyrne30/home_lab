@@ -1,0 +1,22 @@
+opensearch_name: log-server
+opensearch_data_path: /mnt/logs
+opensearch_log_path: /var/log/opensearch
+opensearch_port: 9200
+opensearch_user: admin
+opensearch_pass: admin
+opensearch_dir: /etc/opensearch
+opensearch_fuser: opensearch
+opensearch_fgroup: opensearch
+opensearch_nginx_server_name: opensearch-backend.homelab.local
+opensearch_nginx_port: 5555
+
+opensearch_dashboard_port: 5601
+opensearch_dashboard_dir: /etc/opensearch-dashboards
+opensearch_dashboard_fuser: opensearch-dashboards
+opensearch_dashboard_fgroup: opensearch-dashboards
+opensearch_dashboard_nginx_server_name: opensearch.homelab.local
+opensearch_dashboard_nginx_port: 443
+
+tls_cert_src: "{{ notdefined | mandatory }}"
+tls_key_src: "{{ notdefined | mandatory }}"
+tls_ca_src: "{{ notdefined | mandatory }}"

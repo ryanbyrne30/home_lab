@@ -1,0 +1,32 @@
+- name: Install curl
+  ansible.builtin.apt:
+    name: curl
+    state: present
+    update_cache: yes
+
+- name: Add Fluentd apt repo
+  become: true
+  shell: |
+    curl -o fluent-apt-source.deb https://packages.treasuredata.com/lts/5/ubuntu/jammy/pool/contrib/f/fluent-lts-apt-source/fluent-lts-apt-source_2023.7.29-1_all.deb
+    apt install -y ./fluent-apt-source.deb
+
+- name: Install fluentd
+  become: true
+  ansible.builtin.apt:
+    name: fluent-package
+    update_cache: yes
+
+- name: Configure fluentd
+  ansible.builtin.template:
+    src: fluentd.conf.j2
+    dest: /etc/fluent/fluentd.conf
+    mode: "0644"
+    owner: root
+    group: root
+
+- name: Start fluentd
+  become: true
+  ansible.builtin.systemd_service:
+    state: started
+    name: fluentd
+    enabled: true

@@ -1,0 +1,11 @@
+- name: Assert
+  assert:
+    that:
+      - opensearch_ip is defined
+
+- name: Configure hosts file to include opensearch server
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regexp: "{{ opensearch_nginx_server_name }}"
+    line: "{{ opensearch_ip }} {{ opensearch_nginx_server_name }}"

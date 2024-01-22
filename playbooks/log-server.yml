@@ -1,0 +1,5 @@
+- name: Log Server
+  hosts: log-server
+
+  roles:
+    - role: log-server
