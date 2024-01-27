@@ -1,8 +1,0 @@
-- name: SonarQube
-  hosts: k8s
-
-  roles:
-    - role: sonarqube
-      vars:
-        storage_path: "/home/{{ ansible_user }}/sonarqube"
-        node_hostname: k8s-node1

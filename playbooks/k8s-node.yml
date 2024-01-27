@@ -1,0 +1,6 @@
+- name: Kubernetes Nodes
+  hosts: k8s-node
+
+  roles:
+    - role: ubuntu_vm
+    - role: k8s_node

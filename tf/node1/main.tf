@@ -12,7 +12,7 @@ terraform {
 }
 
 module "k8s_server" {
-  source = "./modules/cloned_vm"
+  source = "../modules/cloned_vm"
 
   proxmox_endpoint = var.proxmox_endpoint
   proxmox_username = var.proxmox_username
@@ -33,7 +33,7 @@ module "k8s_server" {
 resource "local_file" "k8s_ansible_inventory" {
   filename = var.inventory_file 
   content = <<EOF
-[k8s]
-${join("\n", module.k8s_server.ip)} hostname=k8s-server disk_size=100
+[k8s-server]
+${join("\n", module.k8s_server.ip)} hostname=k8s-server disk_size=200
 EOF
 }

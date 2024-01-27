@@ -51,6 +51,16 @@ resource "proxmox_virtual_environment_vm" "cloned_vm" {
     interface = "scsi0"
   }
 
+  dynamic "disk" {
+    for_each = var.disks
+    content {
+      discard = "on"
+      interface = "scsi0"
+      datastore_id = disk.value["datastore_id"]
+      size = disk.value["size"]
+    }
+  }
+
   initialization {
     # keeping default connection so Terraform can manage it 
     ip_config {

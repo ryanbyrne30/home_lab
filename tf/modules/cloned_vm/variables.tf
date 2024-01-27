@@ -84,3 +84,11 @@ variable "network_devices" {
     description = "List of network devices to add to VM. Address is IP address in CIDR notation."
     default = []
 }
+
+variable "disks" {
+    type = list(object({
+      datastore_id = optional(string, "local-lvm")
+      size = optional(number, 8)
+    }))
+    default = []
+}

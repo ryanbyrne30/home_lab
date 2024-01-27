@@ -1,0 +1,70 @@
+- name: Assert variables
+  assert:
+    that:
+      - template is defined
+      - tls_cert_src is defined
+      - tls_key_src is defined
+      - tls_ca_src is defined
+
+- name: Install NGINX
+  become: true
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+
+- name: Remove default nginx service (sites-enabled)
+  become: true
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Write config
+  become: true
+  ansible.builtin.template:
+    src: "{{ template }}"
+    dest: /etc/nginx/sites-available/log-server
+    mode: 0644
+    owner: root
+
+- name: Create symbolic link
+  become: true
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/log-server
+    dest: /etc/nginx/sites-enabled/log-server
+    owner: root
+    group: root
+    state: link
+
+- name: Copy TLS cert
+  become: true
+  ansible.builtin.copy:
+    src: "{{ tls_cert_src }}"
+    dest: /etc/nginx/tls.crt
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Copy TLS key
+  become: true
+  ansible.builtin.copy:
+    src: "{{ tls_key_src }}"
+    dest: /etc/nginx/tls.key
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Copy TLS CA cert
+  become: true
+  ansible.builtin.copy:
+    src: "{{ tls_ca_src }}"
+    dest: /etc/nginx/ca.crt
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Restart NGINX
+  become: true
+  ansible.builtin.systemd_service:
+    name: nginx
+    state: restarted
+    enabled: true

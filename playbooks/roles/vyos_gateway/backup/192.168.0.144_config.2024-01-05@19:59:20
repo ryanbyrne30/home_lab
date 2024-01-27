@@ -1,0 +1,35 @@
+set interfaces ethernet eth0 address 'dhcp'
+set interfaces ethernet eth0 description 'WAN'
+set interfaces ethernet eth0 hw-id 'bc:24:11:0a:67:72'
+set interfaces ethernet eth1 hw-id 'bc:24:11:e7:66:ba'
+set interfaces loopback lo
+set service ntp allow-client address '0.0.0.0/0'
+set service ntp allow-client address '::/0'
+set service ntp server time1.vyos.net
+set service ntp server time2.vyos.net
+set service ntp server time3.vyos.net
+set service ssh ciphers 'aes256-cbc'
+set service ssh ciphers 'aes192-cbc'
+set service ssh ciphers 'aes128-cbc'
+set service ssh ciphers '3des-cbc'
+set service ssh ciphers 'aes128-ctr'
+set service ssh ciphers 'aes192-ctr'
+set service ssh ciphers 'aes256-ctr'
+set service ssh disable-password-authentication
+set service ssh port '22'
+set system config-management commit-revisions '100'
+set system conntrack modules ftp
+set system conntrack modules h323
+set system conntrack modules nfs
+set system conntrack modules pptp
+set system conntrack modules sip
+set system conntrack modules sqlnet
+set system conntrack modules tftp
+set system console device ttyS0 speed '115200'
+set system host-name 'vyos'
+set system login user vyos authentication encrypted-password '$6$rounds=656000$G2XTiF0rQRTpLMZn$fztUNHCJUe5uywrnWX47c6tm8We02l/sMobOneWJ.qLHb.5Zxek48cyBRp5rTYvC4ndEeGnK1/vQ/uv2UvwMd/'
+set system login user vyos authentication plaintext-password ''
+set system login user vyos authentication public-keys admin key 'AAAAB3NzaC1yc2EAAAADAQABAAABgQC22MrosSunDMsgdhmed7aBE7BjG6BYq8l8SwUGBwkwjm29CjJisO2Tx8v6FZY4h2FWWfjWMlICYYZEZt19Hx70n2uffo5Om+ymx3pod6bQ5iAi/x06+2mZcjLkU/qD19V8FcIjai/MC8TN7bO2V9E1aY0W8O25rw0jCPzICwoTDC6nvAH/8pSbF9FeV1jRPbxEQsFbezZFW2KnVGLSR4t3/f3mK6F3fA2sJGVFk+xGrm9hy7RZalWunDkXqQi1hVlLhpWajGdZnor+7PJidbmNdBv1XFipxWsuZlIMX59CDJ9B+cU+kecs3ij9l7YX3IblLerO/ImGaWX6+XQFcgc+Bj8DIQ7bsuMYDWwbtg75VvDmUyNfAMefkD0OmdList8FnIVa5O9s/UiZYqg1icTh1dtfN0Q7GiM zP3qRd+i9VHw7wuYyh31vYpBt3n9yCdp5nPCpTpOTEL6MtpEiv8LvPiLvdLVvUjVUxI/T3MmR9VXJG4Qs7R8GxC/farX2PU='
+set system login user vyos authentication public-keys admin type 'ssh-rsa'
+set system syslog global facility all level 'info'
+set system syslog global facility local7 level 'debug'
