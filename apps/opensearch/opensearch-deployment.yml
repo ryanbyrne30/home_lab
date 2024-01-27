@@ -1,4 +1,4 @@
-apiVersion: apps/v1
+apiVersion: v1
 kind: Deployment
 metadata:
   name: opensearch
@@ -12,6 +12,10 @@ spec:
       labels:
         app: opensearch
     spec:
+      volumes:
+        - name: opensearch-pvc
+          PersistentVolumeReclaimPolicy:
+            claimName: opensearch-pvc
       containers:
         - name: opensearch
           image: opensearchproject/opensearch:latest
@@ -21,7 +25,3 @@ spec:
           volumeMounts:
             - name: opensearch-pvc
               mountPath: /usr/share/opensearch/data
-  volumes:
-    - name: opensearch-pvc
-      PersistentVolumeReclaimPolicy:
-        claimName: opensearch-pvc
