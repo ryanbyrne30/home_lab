@@ -1,0 +1,3 @@
+- ansible.builtin.include_tasks: _install-pip.yml
+- ansible.builtin.include_tasks: _expand-disk.yml
+- ansible.builtin.include_tasks: _set-hostname.yml

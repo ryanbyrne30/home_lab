@@ -1,0 +1,32 @@
+- name: Set facts
+  ansible.builtin.set_fact:
+    get_pip: /var/local/get-pip.py
+
+- name: Check if pip installed
+  shell: |
+    pip --version
+  register: pip
+  ignore_errors: true
+
+# - name: Debug pip
+#   debug:
+#     var: pip
+
+- name: Install pip
+  become: true
+  when: pip.failed == true
+  block:
+    - name: Download get-pip.py
+      ansible.builtin.get_url:
+        url: https://bootstrap.pypa.io/get-pip.py
+        dest: "{{ get_pip }}"
+
+    - name: Install pip from script
+      shell: |
+        python3 {{ get_pip }}
+
+  always:
+    - name: Delete get-pip.py
+      ansible.builtin.file:
+        path: "{{ get_pip }}"
+        state: absent

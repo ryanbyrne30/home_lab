@@ -1,0 +1,4 @@
+- ansible.builtin.include_tasks: _config-hosts.yml
+- ansible.builtin.include_tasks: _config-syslog.yml
+- ansible.builtin.include_tasks: _prerequisites.yml
+- ansible.builtin.include_tasks: _install-fluentd.yml

@@ -1,0 +1,5 @@
+- name: Add opensearch-backend.homelab.local to /etc/hosts
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regexp: "{{ opensearch_dashboard_nginx_server_name }}"
+    line: "127.0.0.1    {{ opensearch_dashboard_nginx_server_name }}"

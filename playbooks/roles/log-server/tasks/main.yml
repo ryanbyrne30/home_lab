@@ -1,0 +1,3 @@
+- ansible.builtin.include_tasks: _install-opensearch.yml
+- ansible.builtin.include_tasks: _install-opensearch-dashboard.yml
+- ansible.builtin.include_tasks: _install-reverse-proxy.yml

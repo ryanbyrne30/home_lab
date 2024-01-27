@@ -1,0 +1,121 @@
+- name: Assert variables
+  assert:
+    that:
+      - opensearch_dashboard_port is defined
+      - opensearch_dashboard_dir is defined
+      - opensearch_dashboard_fuser is defined
+      - opensearch_dashboard_fgroup is defined
+      - opensearch_port is defined
+      - opensearch_user is defined
+      - opensearch_pass is defined
+      - opensearch_nginx_server_name is defined
+      - opensearch_nginx_port is defined
+      - tls_cert_src is defined
+      - tls_key_src is defined
+      - tls_ca_src is defined
+
+- name: Install dependencies
+  become: true
+  block:
+    - name: Update apt
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Install lsb-release
+      ansible.builtin.apt:
+        name: lsb-release
+        state: present
+
+    - name: Install ca-certificates
+      ansible.builtin.apt:
+        name: ca-certificates
+        state: present
+
+    - name: Install curl
+      ansible.builtin.apt:
+        name: curl
+        state: present
+
+    - name: Install gnupg2
+      ansible.builtin.apt:
+        name: gnupg2
+        state: present
+
+- name: Update GPG key
+  become: true
+  shell: |
+    curl -o- https://artifacts.opensearch.org/publickeys/opensearch.pgp | sudo gpg --dearmor --batch --yes -o /usr/share/keyrings/opensearch-keyring
+
+- name: Create apt repo for OpenSearch Dashboards
+  become: true
+  shell: |
+    echo "deb [signed-by=/usr/share/keyrings/opensearch-keyring] https://artifacts.opensearch.org/releases/bundle/opensearch-dashboards/2.x/apt stable main" | sudo tee /etc/apt/sources.list.d/opensearch-dashboards-2.x.list
+
+- name: Install OpenSearch Dashboards
+  become: true
+  ansible.builtin.apt:
+    name: opensearch-dashboards
+    state: present
+    update_cache: yes
+
+- name: Ensure group exists
+  ansible.builtin.group:
+    name: "{{ opensearch_dashboard_fgroup }}"
+    state: present
+
+- name: Create opensearch user
+  ansible.builtin.user:
+    name: "{{ opensearch_dashboard_fuser }}"
+    group: "{{ opensearch_dashboard_fgroup }}"
+
+- name: Create directory
+  become: true
+  ansible.builtin.file:
+    path: "{{ opensearch_dashboard_dir }}"
+    state: directory
+    owner: "{{ opensearch_dashboard_fuser }}"
+    group: "{{ opensearch_dashboard_fgroup }}"
+    mode: "0755"
+
+- name: Copy TLS cert
+  become: true
+  ansible.builtin.copy:
+    src: "{{ tls_cert_src }}"
+    dest: "{{ opensearch_dashboard_dir }}/tls.crt"
+    owner: "{{ opensearch_dashboard_fuser }}"
+    group: "{{ opensearch_dashboard_fgroup }}"
+    mode: "0644"
+
+- name: Copy TLS key
+  become: true
+  ansible.builtin.copy:
+    src: "{{ tls_key_src }}"
+    dest: "{{ opensearch_dashboard_dir }}/tls.key"
+    owner: "{{ opensearch_dashboard_fuser }}"
+    group: "{{ opensearch_dashboard_fgroup }}"
+    mode: "0600"
+
+- name: Copy TLS CA cert
+  become: true
+  ansible.builtin.copy:
+    src: "{{ tls_ca_src }}"
+    dest: "{{ opensearch_dashboard_dir }}/ca.crt"
+    owner: "{{ opensearch_dashboard_fuser }}"
+    group: "{{ opensearch_dashboard_fgroup }}"
+    mode: "0600"
+
+- name: Copy config
+  become: true
+  ansible.builtin.template:
+    src: opensearch-dashboard-https.yml.j2
+    dest: /etc/opensearch-dashboards/opensearch_dashboards.yml
+    owner: "{{ opensearch_dashboard_fuser }}"
+    group: "{{ opensearch_dashboard_fgroup }}"
+    mode: "0644"
+
+- name: Enable OpenSearch service
+  become: true
+  ansible.builtin.systemd_service:
+    state: restarted
+    name: opensearch-dashboards
+    enabled: true

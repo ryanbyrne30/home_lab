@@ -1,0 +1,17 @@
+server {
+	listen 443 ssl;
+	listen [::]:443 ssl;
+
+	server_name *.homelab.local;
+
+    ssl_certificate         /etc/nginx/tls.crt;
+    ssl_certificate_key     /etc/nginx/tls.key; 
+
+	location / {
+        proxy_pass	http://127.0.0.1:8443;
+		proxy_set_header Host $host;
+		proxy_set_header X-Forwarded-Proto $scheme;
+		proxy_set_header X-Forwarded-Port $server_port;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+	}
+}

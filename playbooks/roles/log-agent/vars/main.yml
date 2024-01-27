@@ -1,0 +1,6 @@
+syslog_port: 5890
+opensearch_host: "{{ notdefined | mandatory }}"
+opensearch_nginx_server_name: opensearch-backend.homelab.local
+opensearch_nginx_port: 5555
+opensearch_user: admin
+opensearch_pass: admin

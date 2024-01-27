@@ -1,0 +1,13 @@
+- name: Expand partition
+  become: true
+  shell: |
+    growpart /dev/sda 3
+  ignore_errors: true
+
+- name: Resize LVM disk space
+  become: true
+  community.general.lvol:
+    vg: ubuntu-vg
+    lv: ubuntu-lv
+    size: +100%FREE
+    resizefs: true

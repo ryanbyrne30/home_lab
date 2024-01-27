@@ -1,0 +1,2 @@
+# hostname: "{{ notdefined | mandatory }}"
+old_hostname: ubuntu

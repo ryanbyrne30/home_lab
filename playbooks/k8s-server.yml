@@ -1,0 +1,9 @@
+- name: Kubernetes Server
+  hosts: k8s-server
+
+  roles:
+    - role: ubuntu-vm
+    - role: reverse-proxy
+      vars:
+        template: k8s-server-nginx.j2
+    - role: k8s-server

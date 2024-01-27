@@ -1,0 +1,35 @@
+server {
+	listen {{ opensearch_nginx_port }} ssl;
+	listen [::]:{{ opensearch_nginx_port }} ssl;
+
+	server_name {{ opensearch_nginx_server_name }};
+
+    ssl_certificate         /etc/nginx/tls.crt;
+    ssl_certificate_key     /etc/nginx/tls.key; 
+    ssl_client_certificate  /etc/nginx/ca.crt; 
+
+	location / {
+        proxy_pass                      https://127.0.0.1:{{ opensearch_port }};
+#        proxy_ssl_certificate           /etc/nginx/tls.crt;
+#        proxy_ssl_certificate_key       /etc/nginx/tls.key;
+#        proxy_ssl_trusted_certificate   /etc/nginx/ca.crt;
+#        proxy_ssl_verify                on;
+#        proxy_ssl_verify_depth          2;
+#        proxy_ssl_session_reuse         on;
+	}
+}
+
+server {
+	listen {{ opensearch_dashboard_nginx_port }} ssl;
+	listen [::]:{{ opensearch_dashboard_nginx_port }} ssl;
+
+	server_name {{ opensearch_dashboard_nginx_server_name }};
+
+    ssl_certificate         /etc/nginx/tls.crt;
+    ssl_certificate_key     /etc/nginx/tls.key; 
+    ssl_client_certificate  /etc/nginx/ca.crt; 
+
+	location / {
+        proxy_pass	http://127.0.0.1:{{ opensearch_dashboard_port }};
+	}
+}

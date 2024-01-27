@@ -1,0 +1,46 @@
+- name: Assert vars
+  assert:
+    that:
+      - k8s_server_ip is defined
+      - k8s_server_token is defined
+
+- name: Create Rancher directory
+  become: true
+  shell: |
+    mkdir -p /etc/rancher/rke2
+
+- name: Create config file
+  become: true
+  ansible.builtin.template:
+    src: "rke2-agent-config.j2"
+    dest: /etc/rancher/rke2/config.yaml
+
+- name: Check if RKE2 agent exists
+  systemd:
+    name: rke2-agent
+  register: rke2_agent
+
+- name: Install RKE2
+  become: true
+  shell: |
+    export INSTALL_RKE2_METHOD=tar 
+    export INSTALL_RKE2_TYPE=agent
+    curl -sfL https://get.rke2.io | sh -
+  when: rke2_agent.status.ActiveState != "active"
+
+- name: Enable RKE2 agent
+  become: true
+  shell: |
+    systemctl enable rke2-agent.service
+  when: rke2_agent.status.ActiveState != "active"
+
+- name: Start RKE2 agent
+  become: true
+  shell: |
+    systemctl start rke2-agent.service
+  when: rke2_agent.status.ActiveState != "active"
+
+- name: Increase memory value for SonarQube
+  become: true
+  shell: |
+    sysctl -w vm.max_map_count=262144

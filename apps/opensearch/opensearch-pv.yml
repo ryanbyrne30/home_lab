@@ -1,0 +1,23 @@
+apiVersion: 1
+kind: PersistentVolume
+metadata:
+  name: opensearch-pv
+spec:
+  capacity:
+    storage: 100Gi
+  volumeMode: Filesystem
+  PersistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  local:
+    path: /mnt/storage
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - k8s-node
+  claimRef:
+    name: opensearch-pvc
+    namespace: logging
