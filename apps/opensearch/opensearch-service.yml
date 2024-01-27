@@ -4,9 +4,11 @@ metadata:
   name: opensearch
 spec:
   ports:
-    - port: 9200
+    - name: rest-api
+      port: 9200
       targetPort: 9200
-    - port: 9600
+    - name: performance
+      port: 9600
       targetPort: 9600
   selector:
     app: opensearch
