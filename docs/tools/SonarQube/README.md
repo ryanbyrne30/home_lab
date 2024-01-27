@@ -24,7 +24,7 @@ SonarQube is a self-managed, automatic code review tool that systematically help
 
 ### [Install on K8s](https://docs.sonarsource.com/sonarqube/latest/setup-and-upgrade/deploy-on-kubernetes/deploy-sonarqube-on-kubernetes/)
 
-[See the Rancher docs for getting started with K8s](../../../infrastructure/tools/kubernetes/rancher/README.md)
+[See the Rancher docs for getting started with K8s](../Kubernetes/rancher/README.md)
 
 #### Create SonarQube PersistentVolume
 
@@ -113,7 +113,7 @@ sysctl -w vm.max_map_count=262144
 
 [Reference](https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/kubernetes-resources-setup/encrypt-http-communication)
 
-Follow [these steps](../../../infrastructure/server_management/certificates/README.md#using-lets-encrypt) to create a TLS certificate and key using Let's Encrypt for your domain.
+Follow [these steps](../../concepts/tls-certificates.md#using-lets-encrypt) to create a TLS certificate and key using Let's Encrypt for your domain.
 
 Add the TLS certificate and key to the NGINX reverse proxy.
 
@@ -136,7 +136,7 @@ Under `Certificates`, add the certificate you created previously.
 
 You should now be able to access SonarQube at `sonarqube.homelab.local`.
 
-If you can't, update your `/etc/hosts` file and add a record that points `sonarqube.homelab.local` at your load balancer (or the host that is running your [nginx load balancer](../../nginx/load_balancer.md)).
+If you can't, update your `/etc/hosts` file and add a record that points `sonarqube.homelab.local` at your load balancer (or the host that is running your [nginx load balancer](../NGINX/load_balancer.md)).
 
 The default login is `admin/admin`.
 

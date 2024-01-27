@@ -2,7 +2,7 @@
 
 ## Tools
 
-- [VyOS](./vyos.md) - Open source virtualized router
+- [VyOS](../tools/vyos/README.md) - Open source virtualized router
 
 ## Good to Know
 
