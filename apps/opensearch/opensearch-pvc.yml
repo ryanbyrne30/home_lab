@@ -6,3 +6,8 @@ metadata:
 spec:
   storageClassName: ""
   volumeName: opensearch-pv
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi

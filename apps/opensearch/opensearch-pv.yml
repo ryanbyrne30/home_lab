@@ -6,6 +6,8 @@ spec:
   capacity:
     storage: 100Gi
   volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
   PersistentVolumeReclaimPolicy: Retain
   storageClassName: ""
   local:
