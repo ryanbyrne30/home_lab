@@ -22,15 +22,15 @@
   become: true
   ansible.builtin.template:
     src: "{{ template }}"
-    dest: /etc/nginx/sites-available/log-server
+    dest: /etc/nginx/sites-available/reverse-proxy
     mode: 0644
     owner: root
 
 - name: Create symbolic link
   become: true
   ansible.builtin.file:
-    src: /etc/nginx/sites-available/log-server
-    dest: /etc/nginx/sites-enabled/log-server
+    src: /etc/nginx/sites-available/reverse-proxy
+    dest: /etc/nginx/sites-enabled/reverse-proxy
     owner: root
     group: root
     state: link

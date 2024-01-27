@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opensearch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: opensearch
+  template:
+    metadata:
+      labels:
+        app: opensearch
+    spec:
+      containers:
+        - name: opensearch
+          image: opensearchproject/opensearch:latest
+          ports:
+            - containerPort: 9200
+            - containerPort: 9600
+          volumeMounts:
+            - name: opensearch-pvc
+              mountPath: /usr/share/opensearch/data
+  volumes:
+    - name: opensearch-pvc
+      PersistentVolumeReclaimPolicy:
+        claimName: opensearch-pvc
