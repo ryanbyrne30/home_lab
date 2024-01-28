@@ -1,0 +1,71 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opensearch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: opensearch
+  template:
+    metadata:
+      labels:
+        app: opensearch
+    spec:
+      volumes:
+        - name: opensearch-pvc
+          PersistentVolumeReclaimPolicy:
+            claimName: opensearch-pvc
+        - name: opensearch-config-yaml
+          secret:
+            secretName: opensearch-config-yaml
+        - name: opensearch-tls-cert
+          secret:
+            secretName: opensearch-tls-cert
+        - name: opensearch-tls-key
+          secret:
+            secretName: opensearch-tls-key
+        - name: opensearch-ca-cert
+          secret:
+            secretName: opensearch-ca-cert
+      containers:
+        - name: opensearch
+          image: opensearchproject/opensearch:latest
+          env:
+            - name: discovery.type
+              value: single-node
+          ports:
+            - containerPort: 9200
+            - containerPort: 9600
+          volumeMounts:
+            - name: opensearch-pvc
+              mountPath: /usr/share/opensearch/data
+            - name: opensearch-config-yaml
+              mountPath: /usr/share/opensearch/config/opensearch.yml
+              subPath: opensearch.yml
+            - name: opensearch-tls-cert
+              mountPath: /usr/share/opensearch/config/tls.crt
+              subPath: tls.crt
+            - name: opensearch-tls-key
+              mountPath: /usr/share/opensearch/config/tls.key
+              subPath: tls.key
+            - name: opensearch-ca-cert
+              mountPath: /usr/share/opensearch/config/ca.crt
+              subPath: ca.crt
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: opensearch
+spec:
+  ports:
+    - name: rest-api
+      port: 9200
+      targetPort: 9200
+    - name: performance
+      port: 9600
+      targetPort: 9600
+  selector:
+    app: opensearch
