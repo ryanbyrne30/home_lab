@@ -38,7 +38,9 @@ resource "proxmox_virtual_environment_vm" "cloned_vm" {
   }
 
   cpu {
+    architecture = x86_64
     cores = var.cpus
+    type = x86-64-v2
   }
 
   memory {

@@ -19,6 +19,9 @@ spec:
       containers:
         - name: opensearch
           image: opensearchproject/opensearch:latest
+          env:
+            - name: discovery.type
+              value: single-node
           ports:
             - containerPort: 9200
             - containerPort: 9600
