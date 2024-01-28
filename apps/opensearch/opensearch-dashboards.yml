@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -12,6 +13,10 @@ spec:
       labels:
         app: opensearch-dashboards
     spec:
+      volumes:
+        - name: config-yaml
+          secret:
+            secretName: opensearch-dashboards-config-yaml
       containers:
         - name: opensearch-dashboards
           image: opensearchproject/opensearch-dashboards:latest
@@ -20,6 +25,10 @@ spec:
               value: '["https://opensearch:9200"]'
           ports:
             - containerPort: 5601
+          volumeMounts:
+            - name: config-yaml
+              mountPath: /etc/opensearch-dashboards/opensearch_dashboards.yml
+              subPath: opensearch_dashboards.yml
 
 ---
 apiVersion: v1
