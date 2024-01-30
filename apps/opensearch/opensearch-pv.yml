@@ -22,4 +22,4 @@ spec:
                 - k8s-node
   claimRef:
     name: opensearch-pvc
-    namespace: logging
+    namespace: opensearch

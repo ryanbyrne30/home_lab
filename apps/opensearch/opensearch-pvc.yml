@@ -2,7 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: opensearch-pvc
-  namespace: logging
+  namespace: opensearch
 spec:
   storageClassName: ""
   volumeName: opensearch-pv

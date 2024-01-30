@@ -1,38 +1,9 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: opensearch-config
-data:
-  opensearch.yml: |
-    http.host: 0.0.0.0
-    path.data: /usr/share/opensearch/data
-
-    plugins.security.ssl.transport.pemcert_filepath: esnode.pem
-    plugins.security.ssl.transport.pemkey_filepath: esnode-key.pem
-    plugins.security.ssl.transport.pemtrustedcas_filepath: root-ca.pem
-    plugins.security.ssl.transport.enforce_hostname_verification: false
-    plugins.security.ssl.http.enabled: true
-    plugins.security.ssl.http.pemcert_filepath: esnode.pem
-    plugins.security.ssl.http.pemkey_filepath: esnode-key.pem
-    plugins.security.ssl.http.pemtrustedcas_filepath: root-ca.pem
-    plugins.security.allow_unsafe_democertificates: true
-    plugins.security.allow_default_init_securityindex: true
-    plugins.security.authcz.admin_dn:
-      - CN=kirk,OU=client,O=client,L=test, C=de
-
-    plugins.security.audit.type: internal_opensearch
-    plugins.security.enable_snapshot_restore_privilege: true
-    plugins.security.check_snapshot_restore_write_privileges: true
-    plugins.security.restapi.roles_enabled: ["all_access", "security_rest_api_access"]
-    plugins.security.system_indices.enabled: true
-    plugins.security.system_indices.indices: [".plugins-ml-config", ".plugins-ml-connector", ".plugins-ml-model-group", ".plugins-ml-model", ".plugins-ml-task", ".plugins-ml-conversation-meta", ".plugins-ml-conversation-interactions", ".opendistro-alerting-config", ".opendistro-alerting-alert*", ".opendistro-anomaly-results*", ".opendistro-anomaly-detector*", ".opendistro-anomaly-checkpoints", ".opendistro-anomaly-detection-state", ".opendistro-reports-*", ".opensearch-notifications-*", ".opensearch-notebooks", ".opensearch-observability", ".ql-datasources", ".opendistro-asynchronous-search-response*", ".replication-metadata-store", ".opensearch-knn-models", ".geospatial-ip2geo-data*"]
-    node.max_local_storage_nodes: 3
-
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: opensearch
+  namespace: opensearch
 spec:
   replicas: 1
   selector:
@@ -47,40 +18,63 @@ spec:
         - name: opensearch-pvc
           PersistentVolumeReclaimPolicy:
             claimName: opensearch-pvc
-        - name: config
-          configMap:
-            name: opensearch-config
-            items:
-              - key: opensearch.yml
-                path: opensearch.yml
+        - name: opensearch-config
+          secret:
+            secretName: opensearch-internal-users-config
+        - name: opensearch-dashboards-config
+          secret:
+            secretName: opensearch-dashboards-config
       containers:
         - name: opensearch
           image: opensearchproject/opensearch:latest
           env:
             - name: discovery.type
               value: single-node
+            - name: plugins.security.ssl.http.enabled
+              value: "false"
           ports:
             - containerPort: 9200
             - containerPort: 9600
           volumeMounts:
             - name: opensearch-pvc
               mountPath: /usr/share/opensearch/data
-            - name: config
-              mountPath: /usr/share/opensearch/config/opensearch.yml
-              subPath: opensearch.yml
+            - name: opensearch-config
+              mountPath: /mnt/config
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - cp /mnt/config/internal_users.yml /usr/share/opensearch/config/opensearch-security/internal_users.yml
+        - name: opensearch-dashboards
+          image: opensearchproject/opensearch-dashboards:latest
+          ports:
+            - containerPort: 5601
+          volumeMounts:
+            - name: opensearch-dashboards-config
+              mountPath: /mnt/dashboard-config
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - cp /mnt/dashboard-config/opensearch_dashboards.yml /usr/share/opensearch-dashboards/config/opensearch_dashboards.yml
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: opensearch
+  namespace: opensearch
 spec:
   ports:
     - name: rest-api
       port: 9200
       targetPort: 9200
-    - name: performance
-      port: 9600
-      targetPort: 9600
+    - name: dashboard
+      port: 5601
+      targetPort: 5601
   selector:
     app: opensearch
