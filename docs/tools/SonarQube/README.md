@@ -119,7 +119,7 @@ Add the TLS certificate and key to the NGINX reverse proxy.
 
 In your Rancher dashboard, under "Secrets" add the certificate and key you just created.
 
-You can then add the TLS secret to the ingress for SonarQube. The TLS certificates should match been the ingress and the reverse proxy.
+You can then add the TLS secret to the ingress for SonarQube. The TLS certificates should match between the ingress and the reverse proxy.
 
 ### Add Ingress Using Rancher Dashboard
 

@@ -14,6 +14,7 @@ spec:
       labels:
         app: opensearch
     spec:
+      automountServiceAccountToken: false
       volumes:
         - name: opensearch-pvc
           PersistentVolumeReclaimPolicy:
@@ -40,6 +41,11 @@ spec:
               mountPath: /usr/share/opensearch/data
             - name: opensearch-config
               mountPath: /mnt/config
+          resources:
+            limits:
+              cpu: 1
+              memory: 2Gi
+              ephemeral-storage: 8Gi
           lifecycle:
             postStart:
               exec:
@@ -54,6 +60,11 @@ spec:
           volumeMounts:
             - name: opensearch-dashboards-config
               mountPath: /mnt/dashboard-config
+          resources:
+            limits:
+              cpu: 1
+              memory: 1Gi
+              ephemeral-storage: 8Gi
           lifecycle:
             postStart:
               exec:
