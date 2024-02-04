@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: clamd-pv
+  namespace: clamav
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  PersistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  local:
+    path: /mnt/clamav
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - k8s-node
+  claimRef:
+    name: clamd-pvc
+    namespace: clamav
