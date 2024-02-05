@@ -123,22 +123,32 @@ data:
     Checks 24
     DatabaseMirror db.local.clamav.net
     DatabaseMirror database.clamav.net
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: clamd-client-config
+  namespace: clamav
+data:
+  clamd.conf: |
+    TCPSocket 3310
+    TCPAddr localhost
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: clamd
+  name: scanner
   namespace: clamav
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: clamd
+      app: scanner
   template:
     metadata:
       labels:
-        app: clamd
+        app: scanner
     spec:
       automountServiceAccountToken: false
       volumes:
@@ -148,6 +158,9 @@ spec:
         - name: clamd-config
           configMap:
             name: clamd-config
+        - name: clamd-client-config
+          configMap:
+            name: clamd-client-config
       containers:
         - name: clamd
           image: clamav/clamav:1.0.4
@@ -170,17 +183,30 @@ spec:
               cpu: 1
               memory: 4Gi
               ephemeral-storage: 8Gi
+        - name: scanner-api
+          image: rbyrne30/malware-scanner:0.0.1
+          ports:
+            - containerPort: 9000
+          volumeMounts:
+            - name: clamd-client-config
+              mountPath: /etc/clamav
+              readOnly: true
+          resources:
+            limits:
+              cpu: 1
+              memory: 1Gi
+              ephemeral-storage: 8Gi
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: clamd
+  name: scanner
   namespace: clamav
 spec:
   ports:
-    - name: clamd
-      port: 3310
-      targetPort: 3310
+    - name: scanner
+      port: 9000
+      targetPort: 9000
   selector:
-    app: clamd
+    app: scanner
