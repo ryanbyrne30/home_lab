@@ -133,7 +133,7 @@ metadata:
 data:
   clamd.conf: |
     TCPSocket 3310
-    TCPAddr clamd
+    TCPAddr localhost
 
 ---
 apiVersion: apps/v1
@@ -179,7 +179,7 @@ spec:
               memory: 4Gi
               ephemeral-storage: 8Gi
         - name: scanner-api
-          image: rbyrne30/malware-scanner:0.0.3
+          image: rbyrne30/malware-scanner:0.0.4
           ports:
             - containerPort: 9000
           volumeMounts:
