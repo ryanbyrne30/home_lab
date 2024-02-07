@@ -125,6 +125,17 @@ data:
     DatabaseMirror database.clamav.net
 
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: clamd-client-config
+  namespace: clamav
+data:
+  clamd.conf: |
+    TCPSocket 3310
+    TCPAddr clamd
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -148,6 +159,9 @@ spec:
         - name: clamd-config
           configMap:
             name: clamd-config
+        - name: clamd-client-config
+          configMap:
+            name: clamd-client-config
       containers:
         - name: clamd
           image: clamav/clamav:1.0.4
@@ -164,6 +178,19 @@ spec:
               cpu: 1
               memory: 4Gi
               ephemeral-storage: 8Gi
+        - name: scanner-api
+          image: rbyrne30/malware-scanner:0.0.3
+          ports:
+            - containerPort: 9000
+          volumeMounts:
+            - name: clamd-client-config
+              mountPath: /etc/clamav
+              readOnly: true
+          resources:
+            limits:
+              cpu: 1
+              memory: 1Gi
+              ephemeral-storage: 8Gi
 
 ---
 apiVersion: v1
@@ -176,5 +203,8 @@ spec:
     - name: clamd
       port: 3310
       targetPort: 3310
+    - name: scanner
+      port: 9000
+      targetPort: 9000
   selector:
     app: clamd
