@@ -24,3 +24,18 @@ spec:
   claimRef:
     name: clamd-pvc
     namespace: clamav
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: clamd-pvc
+  namespace: clamav
+spec:
+  storageClassName: ""
+  volumeName: clamd-pv
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi

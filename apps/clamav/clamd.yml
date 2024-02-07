@@ -123,32 +123,22 @@ data:
     Checks 24
     DatabaseMirror db.local.clamav.net
     DatabaseMirror database.clamav.net
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: clamd-client-config
-  namespace: clamav
-data:
-  clamd.conf: |
-    TCPSocket 3310
-    TCPAddr localhost
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: scanner
+  name: clamd
   namespace: clamav
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: scanner
+      app: clamd
   template:
     metadata:
       labels:
-        app: scanner
+        app: clamd
     spec:
       automountServiceAccountToken: false
       volumes:
@@ -158,20 +148,11 @@ spec:
         - name: clamd-config
           configMap:
             name: clamd-config
-        - name: clamd-client-config
-          configMap:
-            name: clamd-client-config
       containers:
         - name: clamd
           image: clamav/clamav:1.0.4
-          env:
-            - name: discovery.type
-              value: single-node
-            - name: plugins.security.ssl.http.enabled
-              value: "false"
           ports:
-            - containerPort: 9200
-            - containerPort: 9600
+            - containerPort: 3310
           volumeMounts:
             - name: clamd-pvc
               mountPath: /var/lib/clamav
@@ -183,30 +164,17 @@ spec:
               cpu: 1
               memory: 4Gi
               ephemeral-storage: 8Gi
-        - name: scanner-api
-          image: rbyrne30/malware-scanner:0.0.2
-          ports:
-            - containerPort: 9000
-          volumeMounts:
-            - name: clamd-client-config
-              mountPath: /etc/clamav
-              readOnly: true
-          resources:
-            limits:
-              cpu: 1
-              memory: 1Gi
-              ephemeral-storage: 8Gi
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: scanner
+  name: clamd
   namespace: clamav
 spec:
   ports:
-    - name: scanner
-      port: 9000
-      targetPort: 9000
+    - name: clamd
+      port: 3310
+      targetPort: 3310
   selector:
-    app: scanner
+    app: clamd
