@@ -1,0 +1,64 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka
+  namespace: downloader
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      automountServiceAccountToken: false
+      volumes:
+        - name: kafka-pvc
+          PersistentVolumeReclaimPolicy:
+            claimName: kafka-pvc
+      containers:
+        - name: kafka
+          image: bitnami/kafka:3.6
+          ports:
+            - containerPort: 3310
+          volumeMounts:
+            - name: kafka-pvc
+              mountPath: /bitnami/kafka
+          env:
+            - name: KAFKA_CFG_NODE_ID
+              value: "0"
+            - name: KAFKA_CFG_PROCESS_ROLES
+              value: controller,broker
+            - name: KAFKA_CFG_LISTENERS
+              value: PLAINTEXT://:9092,CONTROLLER://:9093
+            - name: KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP
+              value: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+            - name: KAFKA_CFG_CONTROLLER_QUORUM_VOTERS
+              value: 0@localhost:9093
+            - name: KAFKA_CFG_CONTROLLER_LISTENER_NAMES
+              value: CONTROLLER
+          resources:
+            limits:
+              cpu: 0.5
+              memory: 1Gi
+              ephemeral-storage: 4Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+  namespace: downloader
+spec:
+  ports:
+    - name: kafka
+      port: 9092
+      targetPort: 9092
+    - name: kafka-controller
+      port: 9093
+      targetPort: 9093
+  selector:
+    app: kafka
