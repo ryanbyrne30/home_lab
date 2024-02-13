@@ -38,9 +38,9 @@ resource "proxmox_virtual_environment_vm" "cloned_vm" {
   }
 
   cpu {
-    architecture = x86_64
+    architecture = "x86_64"
     cores = var.cpus
-    type = x86-64-v2
+    type = "x86-64-v2"
   }
 
   memory {
@@ -51,6 +51,7 @@ resource "proxmox_virtual_environment_vm" "cloned_vm" {
     discard = "on"
     size = var.disk_size 
     interface = "scsi0"
+    iothread = true
   }
 
   dynamic "disk" {
@@ -60,6 +61,7 @@ resource "proxmox_virtual_environment_vm" "cloned_vm" {
       interface = "scsi0"
       datastore_id = disk.value["datastore_id"]
       size = disk.value["size"]
+      iothread = true
     }
   }
 
@@ -95,6 +97,7 @@ resource "proxmox_virtual_environment_vm" "cloned_vm" {
     content {
       bridge = network_device.value["bridge"] 
       vlan_id = network_device.value["vlan_id"]
+      firewall = true
     }
   }
 }

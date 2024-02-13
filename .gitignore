@@ -1,9 +1,5 @@
 # Terraform
-infrastructure/tools/terraform/files/.terraform
-infrastructure/tools/terraform/files/output
 **/*.tfvars
-tf/*/.terraform
-tf/*/output
-
-## ansible
-infrastructure/tools/ansible/**/backup
+**/*/.terraform
+**/*/.output
+**/*/*.ini

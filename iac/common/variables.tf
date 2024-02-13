@@ -16,3 +16,11 @@ variable "inventory_file" {
     description = "Where to output the inventory file to for Ansible"
     default = "output/inventory.ini"
 }
+
+# variable "ssh_key" {
+#     type = string
+# }
+
+# variable "admin_password" {
+#     type = string
+# }
